@@ -3,14 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "history": "^4.7.2",
+    "node-sass-chokidar": "^1.2.2",
+    "npm-run-all": "^4.1.2",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
-    "react-scripts": "1.1.4"
+    "react-icons": "^2.2.7",
+    "react-redux": "^5.0.7",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-router-redux": "^4.0.8",
+    "react-scripts": "^1.1.4",
+    "redux": "^3.7.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "build-css": "node-sass-chokidar src/stylesheets/ -o src/stylesheets/",
+    "watch-css": "npm run build-css && node-sass-chokidar src/stylesheets/ -o src/stylesheets/ --watch --recursive",
+    "start-js": "react-scripts start",
+    "start": "npm-run-all -p watch-css start-js",
+    "build-js": "react-scripts build",
+    "build": "npm-run-all build-css build-js",
+    "test": "react-scripts test --env=jsdom"
   }
 }
