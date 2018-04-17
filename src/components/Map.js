@@ -60,7 +60,7 @@ getLatLonZoom(e) {
 getLatLon(e) {
     if(!this.zoombool) {
       const {imageOffsetTop, imageOffsetLeft} = this.scroll();
-      const { heightDevider, widthDevider } = this.getWidthHeight();
+      const { heightDevider, widthDevider } = () => this.getWidthHeight();
       let positionY = e.pageY - imageOffsetTop;
       let positionX = e.pageX - imageOffsetLeft;
       this.imageLat = (50 - positionY/heightDevider) * 1.8;
@@ -77,8 +77,8 @@ getLatLon(e) {
 
 displayLonLat(e) {
     if(!this.zoombool) {
-      this.getWidthHeight();
-      const {imageLatRound, imageLonRound} = this.getLatLon(e);
+      () => this.getWidthHeight();
+      const {imageLatRound, imageLonRound} = () => this.getLatLon(e);
       document.documentElement.style.setProperty("--pageX", e.pageX + this.suffix);
       document.documentElement.style.setProperty(`--pageY`, e.pageY + this.suffix);
       document.querySelector('.spanLat').innerHTML = imageLatRound;
@@ -87,8 +87,8 @@ displayLonLat(e) {
   }
 
 displayZoomed(e) {
-    if(this.zoombool) {
       this.getWidthHeight();
+    if(this.zoombool) {
       const {imageLatRound, imageLonRound} = this.getLatLonZoom(e);
       document.documentElement.style.setProperty("--pageX", e.pageX + this.suffix);
       document.documentElement.style.setProperty(`--pageY`, e.pageY + this.suffix);
@@ -133,6 +133,9 @@ zoomout(e) {
 
 
 getWidthHeight() {
+  let image = document.querySelector(".world-map");
+  let images = document.querySelectorAll('.img');
+  let zoomedpic = document.querySelector('.zoomed');
       let theCSSpropWidth = window.getComputedStyle(this.image,null).getPropertyValue("width");
       let imageWidth = parseInt(theCSSpropWidth);
       let varHeight = imageWidth/2;
@@ -149,9 +152,12 @@ getWidthHeight() {
 
 
 scroll() {
-      this.getWidthHeight();
-      let imageOffsetTop = this.image.offsetTop;
-      let imageOffsetLeft = this.image.offsetLeft;
+      () => this.getWidthHeight();
+      let image = document.querySelector(".world-map");
+      let images = document.querySelectorAll('.img');
+      let zoomedpic = document.querySelector('.zoomed');
+      let imageOffsetTop = image.offsetTop;
+      let imageOffsetLeft = image.offsetLeft;
       return {imageOffsetTop, imageOffsetLeft}
     }
 
@@ -159,8 +165,8 @@ scroll() {
 
  getAllData(e) {
       if(!e.ctrlKey) {
-        this.getLatLon(e);
-        this.getLatLonZoom(e);
+        () => this.getLatLon(e);
+        () => this.getLatLonZoom(e);
         fetch(` https://maps.googleapis.com/maps/api/geocode/json?latlng=${this.imageLat},${this.imageLon}&key=AIzaSyAhbhZNE6A-Zcg49SMCyO7r_lH4MCDylRc `)
         .then(response => response.json())
         .then(cityName => {
