@@ -12,7 +12,7 @@ class Map extends React.Component {
       suffix: "px",
       savedcities: [],
       wheatherAllWorld: 0,
-      weatherAllWorldF: 0,
+      wheatherAllWorldF: 0,
       offsetWorld: 0,
       wheatherIconWorld: '',
       zoombool: false,
@@ -34,6 +34,7 @@ class Map extends React.Component {
       index: 0,
       imageOffsetTop: 0,
       imageOffsetLeft: 0,
+      icon: "",
     };
     console.log(this.state);
   }
@@ -63,8 +64,8 @@ class Map extends React.Component {
 
   getLatLon = (e) => {
     if(!this.state.zoombool) {
-      this.scroll();
-      this.getWidthHeight();
+      this.scroll(e);
+      this.getWidthHeight(e);
       let positionY = e.pageY - this.state.imageOffsetTop;
       let positionX = e.pageX - this.state.imageOffsetLeft;
       let imageLatLet = (50 - positionY/this.state.heightDevider) * 1.8;
@@ -77,12 +78,14 @@ class Map extends React.Component {
         imageLatRound: imageLatRoundLet,
         imageLonRound: imageLonRoundLet,
       }));
+      return { imageLatLet, imageLonLet, imageLatRoundLet, imageLonRoundLet }
     }
   }
 
   displayLonLat = (e) => {
     this.getWidthHeight(e);
     if(!this.state.zoombool) {
+      this.getLatLon(e);
       document.documentElement.style.setProperty("--pageX", e.pageX + this.state.suffix);
       document.documentElement.style.setProperty(`--pageY`, e.pageY + this.state.suffix);
       document.querySelector('.spanLat').innerHTML = this.state.imageLatRound;
@@ -93,7 +96,7 @@ class Map extends React.Component {
   displayZoomed = (e) => {
     this.getWidthHeight(e);
     if(this.state.zoombool) {
-      this.getLatLon()
+      this.getLatLon(e);
       document.documentElement.style.setProperty("--pageX", e.pageX + this.state.suffix);
       document.documentElement.style.setProperty(`--pageY`, e.pageY + this.state.suffix);
       document.querySelector('.spanLat').innerHTML = this.state.imageLatRound;
@@ -114,8 +117,9 @@ class Map extends React.Component {
   zoom  = (e) => {
     if(e.ctrlKey || e.shiftKey) {
       this.getWidthHeight();
-      document.querySelector('.zoomed').style.backgroundImage = `url(./images/img${e.target.id}.jpg)`;
-      document.querySelector('.zoomed').style.display = "grid";
+      console.log("zooooooooooooom", e.target.id);
+      document.querySelector('.zoomed').style.backgroundImage = `url(../images/img${e.target.id}.jpg)`;
+      document.querySelector('.zoomed').style.display = "block";
       this.setState(() => ({
         maxRow: Math.floor(e.target.id/10),
         maxlat: (90 - (this.maxRow  * 18)),
@@ -136,6 +140,7 @@ class Map extends React.Component {
     }
 
     getWidthHeight = () => {
+          this.addEventListener();
       let image = document.querySelector(".world-map");
       let theCSSpropWidth = window.getComputedStyle(image,null).getPropertyValue("width");
       let imageWidth = parseInt(theCSSpropWidth);
@@ -163,284 +168,242 @@ class Map extends React.Component {
       }));
     }
 
-    getAllData = (e) => {
-      if(!e.ctrlKey) {
-        this.getLatLon(e);
-        this.getLatLonZoom(e);
-        fetch(` https://maps.googleapis.com/maps/api/geocode/json?latlng=${this.state.imageLat},${this.state.imageLon}&key=AIzaSyAhbhZNE6A-Zcg49SMCyO7r_lH4MCDylRc `)
-        .then(response => response.json())
-        .then(cityName => {
-            let cityNameResult = cityName.results[0].address_components[1].short_name;
-            this.setState(() => ({
-            worldPlace: cityName.results[0].address_components[1].short_name,
-            }))
-        })
-        .then(() => {
-        fetch(` https://maps.googleapis.com/maps/api/timezone/json?location=${this.state.imageLat},${this.state.imageLon}&timestamp=1331161200&key=AIzaSyANpHwd0ZvP_2qrvqEEp-5l6NS3LkwxSbY `)
-        .then(response => response.json())
-        .then(world =>  this.setState(() => ({
+    fetchWorldPlace(e) {
+      fetch(` https://maps.googleapis.com/maps/api/geocode/json?latlng=${this.state.imageLat},${this.state.imageLon}&key=AIzaSyAhbhZNE6A-Zcg49SMCyO7r_lH4MCDylRc `)
+      .then(response => response.json())
+      .then(cityName => ({
+        worldPlace: cityName.results[0].address_components[1].short_name
+      }));
+    }
+
+    fetchOffsetWorld() {
+      fetch(` https://maps.googleapis.com/maps/api/timezone/json?location=${this.state.imageLat},${this.state.imageLon}&timestamp=1331161200&key=AIzaSyANpHwd0ZvP_2qrvqEEp-5l6NS3LkwxSbY `)
+      .then(response => response.json())
+      .then(world => this.setState(() => ({
              offsetWorld: world.rawOffset
-             })))
-        })
-        .then(() => {
-        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${this.state.imageLat}&lon=${this.state.imageLon}&units=metric&APPID=261e313010ab3d43b1344ab9eba64cfa`)
-        .then(response => response.json())
-        .then(data => {
-           let tempC = data.main.temp;
-           let tempF = (tempC * 1.8)+32;
-           this.setState(() => ({
-            wheatherAllWorld: tempC,
-            weatherAllWorldF:tempF,
-            wheatherIconWorld: data.weather[0].icon,
-            }));
-         })
-        })
-        .then(() => {
+      }))
+     )
+    }
+
+        fetchTempWorld(e) {
+          fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${this.state.imageLat}&lon=${this.state.imageLon}&units=metric&APPID=261e313010ab3d43b1344ab9eba64cfa`)
+          .then(response => response.json())
+          .then(data => {
+             let tempC = data.main.temp;
+             let tempF = (tempC * 1.8)+32;
+             let icon = data.weather[0].icon;
+             document.querySelector('.cornerTemp1000').innerHTML = Math.round(tempC) + "C";
+             document.querySelector('.cornerTempF1000').innerHTML = Math.round(tempF) + "F";
+             this.setState(() => ({
+                wheatherAllWorld: tempC,
+                wheatherAllWorldF: tempF,
+                icon,
+             }))
+           })
+           return
+        }
+
+        getCurrentDay() {
           const timeWorld = new Date().getHours()
           const dayNow = new Date().getDay()
           const offsetHours = (this.state.offsetWorld/3600);
           if ((offsetHours + timeWorld + this.state.guadalajaraHours + 1) > 23) {
-            this.state.curentDay = dayNow + 1
+            this.setState(() => ({
+                curentDay: dayNow + 1
+             }));
           } else if ((offsetHours + timeWorld + this.state.guadalajaraHours + 1) < 0) {
-            this.state.curentDay = dayNow - 1
+            this.setState(() => ({
+                curentDay: dayNow - 1
+             }));
           } else {
-            this.state.curentDay = dayNow
+            this.setState(() => ({
+                curentDay: dayNow
+             }));
           }
           switch (this.state.curentDay) {
             case 0:
-            this.day = "Sunday";
+            this.setState(() => ({
+                day: "Sunday"
+             }));
             break;
             case 1:
-            this.day = "Monday";
+            this.setState(() => ({
+                day: "Monday"
+             }));
             break;
             case 2:
-            this.day = "Tuesday";
+            this.setState(() => ({
+                day: "Thusday"
+             }));
             break;
             case 3:
-            this.day = "Wednesday";
+            this.setState(() => ({
+                day: "wednsday"
+             }));
             break;
             case 4:
-            this.day = "Thursday";
+            this.setState(() => ({
+                day: "Thursday"
+             }));
             break;
             case 5:
-            this.day = "Friday";
+            this.setState(() => ({
+                day: "Friday"
+             }));
             break;
             case 6:
-            this.day = "Saturday";
+            this.setState(() => ({
+                day: "Saturday"
+             }));
            }
-          })
-          .then(() => {
-          document.querySelector('.movingDivmax1000').style.display = "block";
-          document.querySelector('.spanLat1000').innerHTML = this.state.imageLat.toFixed(2);
-          document.querySelector('.spanLon1000').innerHTML = this.state.imageLon.toFixed(2);
-          document.querySelector('.cornerTemp1000').innerHTML = Math.round(this.state.wheatherAllWorld) + "C";
-          document.querySelector('.cornerTempF1000').innerHTML = Math.round(this.state.weatherAllWorldF) + "F";
-          document.querySelector('.cornerDay1000').innerHTML = this.state.day;
-          const nowWorld = new Date();
-          const minsWorld = nowWorld.getMinutes() < 10 ? "0" + nowWorld.getMinutes() : nowWorld.getMinutes();
-          const hourWorld = nowWorld.getHours();
-          const offsetHoursWorld = (this.state.offsetWorld / 3600);
-          const d = new Date();
-          const guadalajaraOffsetHours = d.getTimezoneOffset();
-          const guadalajaraHours = (guadalajaraOffsetHours / 60);
-          const curentHourWorld =  Math.floor(hourWorld + offsetHoursWorld + guadalajaraHours + 1);
-              this.setState(() => ({
-                  minsWorld: minsWorld,
-                  hourWorld: hourWorld,
-                  guadalajaraHours: guadalajaraHours,
-                  curentHourWorld: curentHourWorld
-              }))
-          })
-          .then(() => {
-          if (this.state.curentHourWorld >= 24) {
-            let nextDay = this.state.curentHourWorld - 24
-            document.querySelector(".hoursWorld").innerHTML = `${nextDay}`;
-            this.setState(() => ({
-              curentHourWorld: nextDay
-            }))
-          }
-          else if (this.state.curentHourWorld < 0) {
-            let previousDay = this.state.curentHourWorld + 24
-            document.querySelector(".hoursWorld").innerHTML = `${previousDay}`;
-            this.setState(() => ({
-              curentHourWorld: previousDay
-            }))
-          }
-          else {
-            document.querySelector(".hoursWorld").innerHTML = `${this.state.curentHourWorld}`;
-            this.setState(() => ({
-              curentHourWorld: this.state.curentHourWorld
-            }))
-          }
-          document.querySelector(".minutesWorld").innerHTML = `:${this.state.minsWorld}h`;
-        })
-        .then(() => {
-          fetch(` https://maps.googleapis.com/maps/api/geocode/json?latlng=${this.state.imageLat},${this.state.imageLon}&key=AIzaSyAhbhZNE6A-Zcg49SMCyO7r_lH4MCDylRc `)
-          .then(response => response.json())
-          .then((cityName , i) => {
-            if (cityName.results[0] == undefined || cityName.results[0].address_components[1] == undefined) {
-              let MissingName = 'MISSING PLACE NAME';
-              document.querySelector(".World-city").innerHTML = `${MissingName}`;
-              document.querySelector(".cityCorner1000").innerHTML = `${MissingName}`;
-              let ShortName = '';
-              document.querySelector(".World-countrey").innerHTML = `${ShortName}`;
-              let index = this.state.index;
-              let countryShortName = this.state.countryShortName;
-              let wheatherAllWorld = this.state.wheatherAllWorld;
-              let weatherAllWorldF = this.state.weatherAllWorldF;
-              let day = this.state.day;
-              let curentHour = this.state.curentHourWorld;
-              let curentMin = this.state.minsWorld;
-              let imageLatRound = this.state.imageLatRound;
-              let imageLonRound = this.state.imageLonRound;
-              let wheatherIconWorld = this.state.wheatherIconWorld;
-              const placeNameLi = { index, MissingName,  ShortName , wheatherAllWorld , weatherAllWorldF, day, curentHour , curentMin , imageLatRound , imageLonRound , wheatherIconWorld };
-              this.state.savedcities.push(placeNameLi);
-              this.setState((prevState) => ({
-                index: prevState.index + 1
-              }));
-              this.state.savedcities.push(placeNameLi);
-              const savedList = document.querySelector('.list');
-              savedList.innerHTML = this.state.savedcities.sort((a,b) => b.index - a.index).map(city => {
-                return `
-                <li>
-                <input type="checkbox" data-index=${i} id="item${i}"> <span> ${city.worldPlace} ${city.countryShortName}</span>
-                <span>    ${Math.round(city.wheatherAllWorld)}C|   ${Math.round(city.weatherAllWorldF)}F  ${city.day} ${city.curentHour}:${city.curentMin}h</span><img class="icon-AllWorld" src="./content/${city.wheatherIconWorld}.png" width="70px" height="70px">
-                <span class="textAlighnRight"> Lat:${city.imageLatRound} Lon:${city.imageLonRound} </span>
-                </li>
-                `;
-              }).join('');
-            } else if (cityName.results[0].address_components[3] == undefined)  {
-              let worldPlace = cityName.results[0].address_components[1].short_name ;
-              document.querySelector(".World-city").innerHTML = `${worldPlace}`;
-              document.querySelector(".cityCorner1000").innerHTML = `${worldPlace}`;
-              let countryShortName = '';
-              document.querySelector(".World-countrey").innerHTML = `${countryShortName}`;
-              let index = this.state.index;
-              let wheatherAllWorld = this.state.wheatherAllWorld;
-              let weatherAllWorldF = this.state.weatherAllWorldF;
-              let day = this.state.day;
-              let curentHour = this.state.curentHourWorld;
-              let curentMin = this.state.minsWorld;
-              let imageLatRound = this.state.imageLatRound;
-              let imageLonRound = this.state.imageLonRound;
-              let wheatherIconWorld = this.state.wheatherIconWorld;
-              const placeNameLi = {index, worldPlace,  countryShortName , wheatherAllWorld , weatherAllWorldF , day , curentHour , curentMin ,  imageLatRound , imageLonRound , wheatherIconWorld};
-              this.state.savedcities.push(placeNameLi);
-              this.setState((prevState) => ({
-                index: prevState.index + 1
-              }));
-              const savedList = document.querySelector('.list');
-              savedList.innerHTML = this.state.savedcities.sort((a,b) => b.index - a.index).map((city, i) => {
-                return `
-                <li>
-                <input type="checkbox" data-index=${i} id="item${i}"> <span> ${city.worldPlace} ${city.countryShortName} </span>
-                <span>  ${Math.round(city.wheatherAllWorld)}C|   ${Math.round(city.weatherAllWorldF)}F  ${city.day} ${city.curentHour}:${city.curentMin}h</span><img class="icon-AllWorld" src="./content/${city.wheatherIconWorld}.png" width="70px" height="70px">
-                <span class="textAlighnRight"> Lat:${city.imageLatRound} Lon:${city.imageLonRound} </span>
-                </li>
-                `;
-              }).join('');
-            } else  {
-              let worldPlace = cityName.results[0].address_components[1].short_name;
-              document.querySelector(".World-city").innerHTML = `${worldPlace}` ;
-              document.querySelector(".cityCorner1000").innerHTML = `${worldPlace}`;
-              let countryShortName = cityName.results[0].address_components[3].short_name;
-              document.querySelector(".World-countrey").innerHTML = `${countryShortName}`;
-              let index = this.state.index;
-               this.state.worldPlace;
-              let wheatherAllWorld = this.state.wheatherAllWorld;
-              let weatherAllWorldF = this.state.weatherAllWorldF;
-              let day = this.state.day;
-              let curentHour = this.state.curentHourWorld;
-              let curentMin = this.state.minsWorld;
-              let imageLatRound = this.state.imageLatRound;
-              let imageLonRound = this.state.imageLonRound;
-              let wheatherIconWorld = this.state.wheatherIconWorld;
-              const placeNameLi = {index, worldPlace,  countryShortName , wheatherAllWorld , weatherAllWorldF , day , curentHour , curentMin,  imageLatRound , imageLonRound , wheatherIconWorld};
-              this.state.savedcities.push(placeNameLi);
-              this.setState((prevState) => ({
-                index: prevState.index + 1
-              }));
-
-              const savedList = document.querySelector('.list');
-              savedList.innerHTML = this.state.savedcities.sort((a,b) => b.index - a.index).map(city => {
-                return `
-                <li>
-                <input type="checkbox" data-index=${i} id="item${i}"> <span> ${city.worldPlace} ${city.countryShortName}</span>
-                <span>  ${Math.round(city.wheatherAllWorld)}C|   ${Math.round(city.weatherAllWorldF)}F  ${city.day} ${city.curentHour}:${city.curentMin}h</span><img class="icon-AllWorld" src="./content/${city.wheatherIconWorld}.png" width="70px" height="70px">
-                <span class="textAlighnRight"> Lat:${city.imageLatRound} Lon:${city.imageLonRound} </span>
-                </li>
-                `;
-              }).join('');
-              console.log(savedList);
-            }
-   })
- })
-}
-}
-
-
-  zoomClick = () => {
-     const display = this.displayZoomed(15, 20);
-     console.log(display);
-     this.zoomout();
-   }
-
-   clickTest = () => {
-     const display = this.displayControl(15, 20);
-     console.log(display);
-      this.rundom();
-    }
-
-    displayControl(a, b) {
-      return a + b
-    }
-    rundom = () => {
-    console.log("rundom");
-    }
-
-    componenWillMount()  {
-      // this.getWidthHeight();
-      // this.scroll();
-      // let image = document.querySelector(".world-map");
-      // let images = document.querySelectorAll('.img');
-      // let zoomedpic = document.querySelector('.zoomed');
-      // zoomedpic.addEventListener("click", this.zoomout);
-      // zoomedpic.addEventListener('click', this.displayZoomed);
-      // zoomedpic.addEventListener('mousemove', this.displayZoomed);
-      // document.querySelector(".world-map").addEventListener("mousemove", this.displayLonLat);
-      // document.querySelector(".world-map").addEventListener("click", this.displayLonLat);
-      // document.querySelector(".world-map").addEventListener("mouseover", this.displayOn);
-      // document.querySelector(".world-map").addEventListener("mouseout", this.displayOff);
-      // document.querySelectorAll('.img').forEach(option => option.addEventListener('click', this.zoom));
-    }
-
-
-        componenDidMount() {
-           window.addEventListener("scroll", this.scroll);
-           document.querySelectorAll('.img').forEach(option => option.addEventListener('click', this.zoom));
         }
+
+      innerHtmlCorner = () => {
+        document.querySelector('.movingDivmax1000').style.display = "block";
+        document.querySelector('.spanLat1000').innerHTML = this.state.imageLat.toFixed(2);
+        document.querySelector('.spanLon1000').innerHTML = this.state.imageLon.toFixed(2);
+        document.querySelector('.cornerTemp1000').innerHTML = Math.round(this.state.wheatherAllWorld) + "C";
+        document.querySelector('.cornerTempF1000').innerHTML = Math.round(this.state.wheatherAllWorldF) + "F";
+        document.querySelector('.cornerDay1000').innerHTML = this.state.day;
+      }
+
+      getMinHour = (e) => {
+        this.fetchOffsetWorld();
+        const nowWorld = new Date();
+        const minsWorld = nowWorld.getMinutes() < 10 ? "0" + nowWorld.getMinutes() : nowWorld.getMinutes();
+        document.querySelector(".minutesWorld").innerHTML = `:${minsWorld}h`;
+        this.setState(() => ({
+          curentMin: minsWorld
+        }))
+        const hourWorld = nowWorld.getHours();
+        const offsetHoursWorld = (this.state.offsetWorld / 3600);
+        const d = new Date();
+        const guadalajaraOffsetHours = d.getTimezoneOffset();
+        const guadalajaraHours = (guadalajaraOffsetHours / 60);
+        const curentHourWorld =  Math.floor(hourWorld + offsetHoursWorld + guadalajaraHours + 1);
+        if (curentHourWorld >= 24) {
+          let nextDay = curentHourWorld - 24
+          document.querySelector(".hoursWorld").innerHTML = `${nextDay}`;
+          this.setState(() => ({
+            curentHourWorld: nextDay
+          }))
+        }
+        else if (curentHourWorld < 0) {
+          let previousDay = curentHourWorld + 24
+          document.querySelector(".hoursWorld").innerHTML = `${previousDay}`;
+          this.setState(() => ({
+            curentHourWorld: previousDay
+          }))
+        }
+        else {
+          document.querySelector(".hoursWorld").innerHTML = `${curentHourWorld}`;
+          this.setState(() => ({
+            curentHourWorld: curentHourWorld
+          }))
+        }
+    }
+
+  pushObjectList = (e) => {
+    fetch(` https://maps.googleapis.com/maps/api/geocode/json?latlng=${this.state.imageLat},${this.state.imageLon}&key=AIzaSyAhbhZNE6A-Zcg49SMCyO7r_lH4MCDylRc `)
+    .then(response => response.json())
+    .then((cityName , i) => {
+      if (cityName.results[0] == undefined || cityName.results[0].address_components[1] == undefined) {
+        let MissingName = 'MISSING PLACE NAME';
+        document.querySelector(".cityCorner1000").innerHTML = `${MissingName}`;
+        let ShortName = '';
+        let index = this.state.index;
+        const placeNameLi =   { index: this.state.index, worldPlace: MissingName , countryShortName: ShortName  , tempC: this.state.wheatherAllWorld , tempF: this.state.wheatherAllWorldF, day:this.state.day, curentHour: this.state.curentHourWorld , minsWorld: this.state.curentMin , imageLatRoundLet: this.state.imageLatRound, imageLonRoundLet: this.state.imageLonRound  , icon: this.state.icon }
+        this.state.savedcities.push(placeNameLi);
+        console.log(placeNameLi);
+        this.setState((prevState) => ({
+          index: prevState.index + 1
+        }));
+        this.state.savedcities.push(placeNameLi);
+        const savedList = document.querySelector('.list');
+        savedList.innerHTML = this.state.savedcities.sort((a,b) => b.index - a.index).map(city => {
+          return `
+          <li>
+          <input type="checkbox" data-index=${i} id="item${i}"> <span> ${city.worldPlace} ${city.countryShortName}</span>
+          <span>    ${Math.round(city.tempC)}C|   ${Math.round(city.tempF)}F  ${city.day} ${city.curentHour}:${city.minsWorld}h</span><img className="icon-AllWorld" src={require('../content/${city.icon}.png')} width="70px" height="70px" />
+          <span class="textAlighnRight"> Lat:${city.imageLatRoundLet} Lon:${city.imageLonRoundLet} </span>
+          </li>
+          `;
+        }).join('');
+      } else if (cityName.results[0].address_components[3] == undefined)  {
+        let worldPlace = cityName.results[0].address_components[1].short_name ;
+        document.querySelector(".cityCorner1000").innerHTML = `${worldPlace}`;
+        const placeNameLi =   { index: this.state.index, worldPlace: worldPlace , countryShortName: '' ,tempC: this.state.wheatherAllWorld , tempF: this.state.wheatherAllWorldF , day:this.state.day, curentHour: this.state.curentHourWorld , minsWorld: this.state.curentMin , imageLatRoundLet: this.state.imageLatRound,  imageLonRoundLet: this.state.imageLonRound  , icon: this.state.icon }
+        this.state.savedcities.push(placeNameLi);
+        console.log(placeNameLi);
+        this.setState((prevState) => ({
+          index: prevState.index + 1
+        }));
+        const savedList = document.querySelector('.list');
+        savedList.innerHTML = this.state.savedcities.sort((a,b) => b.index - a.index).map((city, i) => {
+          return `
+          <li>
+          <input type="checkbox" data-index=${i} id="item${i}"> <span> ${city.worldPlace} ${city.countryShortName} </span>
+          <span>  ${Math.round(city.tempC)}C|   ${Math.round(city.tempF)}F  ${city.day} ${city.curentHour}:${city.minsWorld}h</span><img className="icon-AllWorld" src={require('../content/${city.icon}.png')} width="70px" height="70px" />
+          <span class="textAlighnRight"> Lat:${city.imageLatRoundLet} Lon:${city.imageLonRoundLet} </span>
+          </li>
+          `;
+        }).join('');
+      } else  {
+        let worldPlace = cityName.results[0].address_components[1].short_name;
+        document.querySelector(".cityCorner1000").innerHTML = `${worldPlace}`;
+        let countryShortName = cityName.results[0].address_components[3].short_name;
+        const placeNameLi =   { index: this.state.index,  worldPlace: worldPlace    , countryShortName: countryShortName  , tempC: this.state.wheatherAllWorld ,  tempF: this.state.wheatherAllWorldF , day:this.state.day, curentHour: this.state.curentHourWorld ,  minsWorld: this.state.curentMin , imageLatRoundLet: this.state.imageLatRound,  imageLonRoundLet: this.state.imageLonRound  , icon: this.state.icon }
+        this.state.savedcities.push(placeNameLi);
+        console.log(placeNameLi);
+
+        this.setState((prevState) => ({
+          index: prevState.index + 1
+        }));
+        const savedList = document.querySelector('.list');
+        savedList.innerHTML = this.state.savedcities.sort((a,b) => b.index - a.index).map(city => {
+          return `
+          <li>
+          <input type="checkbox" data-index=${i} id="item${i}"> <span> ${city.worldPlace} ${city.countryShortName}</span>
+          <span>  ${Math.round(city.tempC)}C|   ${Math.round(city.tempF)}F  ${city.day} ${city.curentHour}:${city.minsWorld}h</span><img className="icon-AllWorld" src={require('../content/${city.icon}.png')} width="70px" height="70px" />
+          <span class="textAlighnRight"> Lat:${city.imageLatRoundLet} Lon:${city.imageLonRoundLet} </span>
+          </li>
+          `;
+        }).join('');
+        console.log(savedList);
+      }
+    })
+  }
+
+
+
+  getAllData = (e) => {
+    if(!e.ctrlKey) {
+      this.getLatLon(e);
+      this.getLatLonZoom(e);
+      this.fetchWorldPlace(e);
+      this.fetchTempWorld(e)
+      this.fetchOffsetWorld(e);
+      this.getMinHour(e);
+      this.innerHtmlCorner(e);
+      setTimeout(
+        () => this.pushObjectList(e),
+        () => this.innerHtmlCorner(e)
+      ,1000
+      )
+
+    }
+  }
+
+addEventListener() {
+  document.querySelectorAll('.img').forEach(option => option.addEventListener('click', this.zoom));
+}
 
 
     render() {
       return (
+        <div>
         <div className="body-container">
-        <div className="clock World-clock">
-        <div className="clock-face">
-        <div className="hand hour-hand hour-handWorld"></div>
-        <div className="hand min-hand min-handWorld"></div>
-        <div className="hand second-hand second-handWorld"></div>
-        <div className="dot-center"></div>
-        <div className="hours hour3"></div>
-        <div className="hours hour6"></div>
-        <div className="hours hour9"></div>
-        <div className="hours hour12"></div>
-        <div className="World-names"><span className="World-city">World</span><span className="World-countrey"></span></div>
-        </div>
-        <div className="temp-info tempAllWorld"><span className="text-london"/><span className="temp temp-AllWorld"></span><span>°C</span>|<span className="temp tempF-AllWorld"></span><span>°F</span><div className="temp day-AllWorld"></div></div>
-        <div className="icons icon-AllWorld"></div>
-        </div>
-        <div className="world-map" onClick={this.getAllData} onMouseMove={this.displayLonLat} onMouseOver={this.displayOn} onMouseOut={this.displayOff} >
+        <div className="world-map" onClick={this.getAllData} onMouseMove={this.displayLonLat} onMouseOver={this.displayOn} onMouseOut={this.displayOff}>
         <div className="img img1" id="0" data-minlon="" data-maxlat=""></div>
         <div className="img img1" id="1" data-minlon="" data-maxlat=""></div>
         <div className="img img2" id="2" data-minlon="" data-maxlat=""></div>
@@ -541,7 +504,7 @@ class Map extends React.Component {
         <div className="img img97" id="97" data-minlon="" data-maxlat=""></div>
         <div className="img img98" id="98" data-minlon="" data-maxlat=""></div>
         <div className="img img99" id="99" data-minlon="" data-maxlat=""></div>
-        <div className="zoomed" onClick={this.zoomClick} ></div>
+        <div className="zoomed"></div>
         </div>
         <div className="wrapper">
         <h2 onClick={this.clickTest}>RECENT PLACES</h2>
@@ -580,6 +543,7 @@ class Map extends React.Component {
         <div>
         <span className="LonLat cornerDay1000"></span>
         <span className="hoursWorld"></span>:<span className="minutesWorld"/>
+        </div>
         </div>
         </div>
         </div>

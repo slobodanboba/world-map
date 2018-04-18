@@ -24,5 +24,9 @@
     "build-js": "react-scripts build",
     "build": "npm-run-all build-css build-js",
     "test": "react-scripts test --env=jsdom"
+  },
+  "devDependencies": {
+    "file-loader": "^1.1.11",
+    "url-loader": "^1.0.1"
   }
 }
