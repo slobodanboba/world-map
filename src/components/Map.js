@@ -1,4 +1,5 @@
 import React from 'react';
+import 'raw-loader';
 import '../stylesheets/style.css';
 
 
@@ -299,61 +300,16 @@ class Map extends React.Component {
         document.querySelector('.spanLon1000').innerHTML = lon.toFixed(2);
         document.querySelector('.cornerTemp1000').innerHTML = Math.round(tempC) + "C";
         document.querySelector('.cornerTempF1000').innerHTML = Math.round(tempF) + "F";
-        this.setState(() => ({
-          wheatherAllWorld: tempC,
-          wheatherAllWorldF: tempF,
-          icon,
-        }))
-        return { tempC, tempF , icon}
-      })
-      .then(data => {
-        const  { tempC, tempF, icon } = data;
-        console.log(data);
         this.fetchCityName().then((cityName , i) => {
-          if (cityName.results[0] == undefined || cityName.results[0].address_components[1] == undefined) {
-            let MissingName = 'MISSING PLACE NAME';
-            document.querySelector(".cityCorner1000").innerHTML = `${MissingName}`;
-            let ShortName = '';
-            let index = this.state.index;
-            const placeNameLi =   { index: this.state.index, worldPlace: MissingName , countryShortName: ShortName  , tempC: tempC , tempF: tempF, day:this.state.day, curentHour: this.state.curentHourWorld , minsWorld: this.state.curentMin , imageLatRoundLet: this.state.imageLatRound, imageLonRoundLet: this.state.imageLonRound  , icon: this.state.icon }
-            this.state.savedcities.push(placeNameLi);
-            this.setState((prevState) => ({
-              index: prevState.index + 1
-            }));
-            this.state.savedcities.push(placeNameLi);
-            const savedList = document.querySelector('.list');
-            savedList.innerHTML = this.state.savedcities.sort((a,b) => b.index - a.index).map(city => {
-              return `
-              <li>
-              <input type="checkbox" data-index=${i} id="item${i}"> <span> ${city.worldPlace} ${city.countryShortName}</span>
-              <span>    ${Math.round(city.tempC)}C|   ${Math.round(city.tempF)}F  ${city.day} ${city.curentHour}:${city.minsWorld}h</span><img className="icon-AllWorld" src={require('../content/${city.icon}.png')} width="70px" height="70px" />
-              <span class="textAlighnRight"> Lat:${city.imageLatRoundLet} Lon:${city.imageLonRoundLet} </span>
-              </li>
-              `;
-            }).join('');
-          } else if (cityName.results[0].address_components[3] == undefined)  {
-            let worldPlace = cityName.results[0].address_components[1].short_name ;
-            document.querySelector(".cityCorner1000").innerHTML = `${worldPlace}`;
-            const placeNameLi =   { index: this.state.index, worldPlace: worldPlace , countryShortName: '' ,tempC: tempC , tempF: tempF, day:this.state.day, curentHour: this.state.curentHourWorld , minsWorld: this.state.curentMin , imageLatRoundLet: this.state.imageLatRound,  imageLonRoundLet: this.state.imageLonRound  , icon: this.state.icon }
-            this.state.savedcities.push(placeNameLi);
-            this.setState((prevState) => ({
-              index: prevState.index + 1
-            }));
-            const savedList = document.querySelector('.list');
-            savedList.innerHTML = this.state.savedcities.sort((a,b) => b.index - a.index).map((city, i) => {
-              return `
-              <li>
-              <input type="checkbox" data-index=${i} id="item${i}"> <span> ${city.worldPlace} ${city.countryShortName} </span>
-              <span>  ${Math.round(city.tempC)}C|   ${Math.round(city.tempF)}F  ${city.day} ${city.curentHour}:${city.minsWorld}h</span><img className="icon-AllWorld" src={require('../content/${city.icon}.png')} width="70px" height="70px" />
-              <span class="textAlighnRight"> Lat:${city.imageLatRoundLet} Lon:${city.imageLonRoundLet} </span>
-              </li>
-              `;
-            }).join('');
-          } else  {
-            let worldPlace = cityName.results[0].address_components[1].short_name;
-            document.querySelector(".cityCorner1000").innerHTML = `${worldPlace}`;
-            let countryShortName = cityName.results[0].address_components[3].short_name;
-            const placeNameLi =   { index: this.state.index,  worldPlace: worldPlace    , countryShortName: countryShortName  , tempC: tempC , tempF: tempF, day:this.state.day, curentHour: this.state.curentHourWorld ,  minsWorld: this.state.curentMin , imageLatRoundLet: this.state.imageLatRound,  imageLonRoundLet: this.state.imageLonRound  , icon: this.state.icon }
+          let city = "MISSING NAME"
+          let countryName = '';
+          if (typeof cityName.results[0] !== 'undefined' && typeof cityName.results[0].address_components[3] !== 'undefined') {
+             city = cityName.results[0].address_components[1].short_name;
+             countryName = cityName.results[0].address_components[3].short_name;
+          }
+
+            document.querySelector(".cityCorner1000").innerHTML = `${city}`;
+            const placeNameLi =   { index: this.state.index,  worldPlace: city  , countryShortName: countryName  , tempC: tempC , tempF: tempF, day:this.state.day, curentHour: this.state.curentHourWorld ,  minsWorld: this.state.curentMin , imageLatRoundLet: this.state.imageLatRound,  imageLonRoundLet: this.state.imageLonRound  , icon: this.state.icon }
             this.state.savedcities.push(placeNameLi);
             this.setState((prevState) => ({
               index: prevState.index + 1
@@ -369,8 +325,7 @@ class Map extends React.Component {
               `;
             }).join('');
             console.log(savedList);
-          }
-        })
+          })
       })
     }
 
