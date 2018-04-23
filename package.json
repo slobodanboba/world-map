@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "history": "^4.7.2",
+    "jest": "^22.4.3",
     "node-sass-chokidar": "^1.2.2",
     "npm-run-all": "^4.1.2",
     "raw-loader": "^0.5.1",
@@ -24,7 +25,8 @@
     "start": "npm-run-all -p watch-css start-js",
     "build-js": "react-scripts build",
     "build": "npm-run-all build-css build-js",
-    "test": "react-scripts test --env=jsdom"
+    "test": "react-scripts test --env=jsdom",
+    "test-jest": "jest"
   },
   "devDependencies": {
     "file-loader": "^1.1.11",
