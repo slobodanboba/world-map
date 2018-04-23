@@ -16,7 +16,8 @@
     "react-router-dom": "^4.2.2",
     "react-router-redux": "^4.0.8",
     "react-scripts": "^1.1.4",
-    "redux": "^3.7.2"
+    "redux": "^3.7.2",
+    "requirejs": "^2.3.5"
   },
   "scripts": {
     "build-css": "node-sass-chokidar src/stylesheets/ -o src/stylesheets/",
