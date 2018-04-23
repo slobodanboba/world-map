@@ -307,7 +307,6 @@ class Map extends React.Component {
              city = cityName.results[0].address_components[1].short_name;
              countryName = cityName.results[0].address_components[3].short_name;
           }
-
             document.querySelector(".cityCorner1000").innerHTML = `${city}`;
             const placeNameLi =   { index: this.state.index,  worldPlace: city  , countryShortName: countryName  , tempC: tempC , tempF: tempF, day:this.state.day, curentHour: this.state.curentHourWorld ,  minsWorld: this.state.curentMin , imageLatRoundLet: this.state.imageLatRound,  imageLonRoundLet: this.state.imageLonRound  , icon: this.state.icon }
             this.state.savedcities.push(placeNameLi);
@@ -324,7 +323,6 @@ class Map extends React.Component {
               </li>
               `;
             }).join('');
-            console.log(savedList);
           })
       })
     }
