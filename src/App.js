@@ -9,6 +9,7 @@ import './stylesheets/style.css';
 const App = () =>  (
       <div>
         <Map />
+        
         <MovingDiv />
         <CornerInfo />
         <RecentList />
