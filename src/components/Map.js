@@ -34,30 +34,28 @@ class Map extends React.Component {
       index: 0,
       imageOffsetTop: 0,
       imageOffsetLeft: 0,
-      icon: "",
     };
     console.log(this.state);
   }
 
   getLatLonZoom = (e) => {
-    if(this.state.zoombool) {
-      this.scroll();
-      this.getWidthHeight();
+      this.scroll(e);
+      this.getWidthHeight(e);
       let positionYZoom = e.pageY - this.state.imageOffsetTop;
       let positionXZoom = e.pageX - this.state.imageOffsetLeft;
-      let imageLatZoom = (this.maxlat) - ((positionYZoom/this.state.heightDevider) * 0.18);
+      let imageLatZoom = (this.state.maxlat) - ((positionYZoom/this.state.heightDevider) * 0.18);
       let imageLonZoom = ((positionXZoom/this.state.widthDevider) * 0.36 - (-this.state.minlon));
+      console.log(e.pageY,this.state.imageOffsetTop,e.pageX, this.state.imageOffsetLeft, this.state.maxlat, positionYZoom,this.state.heightDevider , imageLatZoom , imageLonZoom );
       this.setState(() => ({
         imageLat: imageLatZoom,
         imageLon: imageLatZoom,
         imageLatRound: imageLatZoom,
         imageLonRound: imageLatZoom,
       }));
-    }
+      return { imageLatZoom, imageLonZoom }
   }
 
   getLatLon = (e) => {
-    if(!this.state.zoombool) {
       this.scroll(e);
       this.getWidthHeight(e);
       let positionY = e.pageY - this.state.imageOffsetTop;
@@ -73,7 +71,6 @@ class Map extends React.Component {
         imageLonRound: imageLonRoundLet,
       }));
       return { imageLatLet, imageLonLet, imageLatRoundLet, imageLonRoundLet }
-    }
   }
 
   displayLonLat = (e) => {
@@ -88,14 +85,14 @@ class Map extends React.Component {
   }
 
   displayZoomed = (e) => {
-    if(this.state.zoombool) {
       this.getWidthHeight(e);
-      this.getLatLon(e);
+      const { imageLatZoom, imageLonZoom } = this.getLatLonZoom(e);
+      let imageLatRoundLet = imageLatZoom.toFixed(2);
+      let imageLonRoundLet = imageLonZoom.toFixed(2);
       document.documentElement.style.setProperty("--pageX", e.pageX + this.state.suffix);
-      document.documentElement.style.setProperty(`--pageY`, e.pageY + this.state.suffix);
-      document.querySelector('.spanLat').innerHTML = this.state.imageLatRound;
-      document.querySelector('.spanLon').innerHTML = this.state.imageLonRound;
-    }
+      document.documentElement.style.setProperty("--pageY", e.pageY + this.state.suffix);
+      document.querySelector('.spanLat').innerHTML = imageLatRoundLet;
+      document.querySelector('.spanLon').innerHTML = imageLonRoundLet;
   }
 
   displayOn = () => {
@@ -109,24 +106,22 @@ class Map extends React.Component {
   }
 
   zoom  = (e) => {
-    if(e.ctrlKey || e.shiftKey) {
+    if((e.ctrlKey || e.shiftKey) && !this.state.zoombool) {
       this.getWidthHeight();
-      console.log("zooooooooooooom", e.target.id);
-      document.querySelector('.zoomed').style.backgroundImage = `url(../images/img${e.target.id}.jpg)`;
+      document.querySelector('.zoomed').style.backgroundImage = `url(./images/img${e.target.id}.jpg)`;
       document.querySelector('.zoomed').style.display = "block";
       this.setState(() => ({
         maxRow: Math.floor(e.target.id/10),
-        maxlat: (90 - (this.maxRow  * 18)),
+        maxlat: (90 - (this.state.maxRow  * 18)),
         maxColumn: (e.target.id%10),
-        minlon: this.maxColumn * 36 - 180,
+        minlon: this.state.maxColumn * 36 - 180,
         zoombool: true,
       }));
     }};
 
     zoomout = (e) => {
-      if(e.ctrlKey || e.shiftKey) {
-        this.getWidthHeight();
-        this.zoomedpic.style.display = "none";
+      if((e.ctrlKey || e.shiftKey) && this.state.zoombool) {
+        document.querySelector('.zoomed').style.display = "none";
         this.setState(() => ({
           zoombool: false,
         }));
@@ -295,6 +290,7 @@ class Map extends React.Component {
         let tempC = data.main.temp;
         let tempF = (tempC * 1.8)+32;
         let icon = data.weather[0].icon;
+        console.log(icon);
         document.querySelector('.movingDivmax1000').style.display = "block";
         document.querySelector('.spanLat1000').innerHTML = lat.toFixed(2);
         document.querySelector('.spanLon1000').innerHTML = lon.toFixed(2);
@@ -308,7 +304,7 @@ class Map extends React.Component {
              countryName = cityName.results[0].address_components[3].short_name;
           }
             document.querySelector(".cityCorner1000").innerHTML = `${city}`;
-            const placeNameLi =   { index: this.state.index,  worldPlace: city  , countryShortName: countryName  , tempC: tempC , tempF: tempF, day:this.state.day, curentHour: this.state.curentHourWorld ,  minsWorld: this.state.curentMin , imageLatRoundLet: this.state.imageLatRound,  imageLonRoundLet: this.state.imageLonRound  , icon: this.state.icon }
+            const placeNameLi =   { index: this.state.index,  worldPlace: city  , countryShortName: countryName  , tempC: tempC , tempF: tempF, day:this.state.day, curentHour: this.state.curentHourWorld ,  minsWorld: this.state.curentMin , imageLatRoundLet: this.state.imageLatRound, imageLonRoundLet: this.state.imageLonRound , icon: icon }
             this.state.savedcities.push(placeNameLi);
             this.setState((prevState) => ({
               index: prevState.index + 1
@@ -318,7 +314,7 @@ class Map extends React.Component {
               return `
               <li>
               <input type="checkbox" data-index=${i} id="item${i}"> <span> ${city.worldPlace} ${city.countryShortName}</span>
-              <span>  ${Math.round(city.tempC)}C|   ${Math.round(city.tempF)}F  ${city.day} ${city.curentHour}:${city.minsWorld}h</span><img className="icon-AllWorld" src={require('../content/${city.icon}.png')} width="70px" height="70px" />
+              <span>  ${Math.round(city.tempC)}C|   ${Math.round(city.tempF)}F  ${city.day} ${city.curentHour}:${city.minsWorld}h</span><img className="icon-AllWorld" src='/content/${city.icon}.png' width="70px" height="70px" />
               <span class="textAlighnRight"> Lat:${city.imageLatRoundLet} Lon:${city.imageLonRoundLet} </span>
               </li>
               `;
@@ -446,7 +442,7 @@ class Map extends React.Component {
         <div className="img img97" id="97"></div>
         <div className="img img98" id="98"></div>
         <div className="img img99" id="99"></div>
-        <div className="zoomed"></div>
+        <div className="zoomed" onClick={this.zoomout} onMouseMove={this.displayZoomed}></div>
         </div>
         <div className="wrapper">
         <h2 onClick={this.clickTest}>RECENT PLACES</h2>
