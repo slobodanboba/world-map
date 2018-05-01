@@ -1,7 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import 'raw-loader';
-import { deleteListItem } from "../actions/actions"
+import { deleteListItem } from "../actions/actions";
+import { deleteAll } from "../actions/actions";
+import { pushToList } from "../actions/actions";
+import List from "./list";
 import '../stylesheets/style.css';
 
 
@@ -268,20 +271,10 @@ class Map extends React.Component {
           }
             document.querySelector(".cityCorner1000").innerHTML = `${city}`;
             const placeNameLi =   { index: this.state.index,  worldPlace: city  , countryShortName: countryName  , tempC: tempC , tempF: tempF, day:this.state.day, curentHour: this.state.curentHourWorld ,  minsWorld: this.state.curentMin , imageLatRoundLet: this.state.imageLatRound, imageLonRoundLet: this.state.imageLonRound , icon: icon }
-            this.state.savedcities.push(placeNameLi);
+            this.props.pushToList({li:placeNameLi });
             this.setState((prevState) => ({
               index: prevState.index + 1
             }));
-            const savedList = document.querySelector('.list');
-            savedList.innerHTML = this.state.savedcities.sort((a,b) => b.index - a.index).map(city => {
-              return `
-              <li>
-              <input type="checkbox" data-index=${city.index} id="item${city.index}"> <span> ${city.worldPlace} ${city.countryShortName}</span>
-              <span>  ${Math.round(city.tempC)}C|   ${Math.round(city.tempF)}F  ${city.day} ${city.curentHour}:${city.minsWorld}h</span><img className="icon-AllWorld" src='/content/${city.icon}.png' width="70px" height="70px" />
-              <span class="textAlighnRight"> Lat:${city.imageLatRoundLet} Lon:${city.imageLonRoundLet} </span>
-              </li>
-              `;
-            }).join('');
           })
       })
     }
@@ -300,7 +293,13 @@ class Map extends React.Component {
     }
 
     onDelete = () => {
-    this.props.deleteListItem;
+      console.log("Delete Action")
+    this.props.deleteListItem();
+}
+
+onDeleteAll = (e) => {
+    this.props.deleteAll();
+    this.pushObjectList(e);
 }
 
     render() {
@@ -415,9 +414,10 @@ class Map extends React.Component {
         <p></p>
         <div>
         <ul className="list">
+            <List city={this.props.state.savedcities} />
         </ul>
           <button onClick={this.onDelete}>Delete</button>
-          <button>Delete All</button>
+          <button onClick={this.onDeleteAll}>Delete All</button>
         </div>
         </div>
 
@@ -465,7 +465,9 @@ class Map extends React.Component {
 
 
   const mapDispatchToProps = (dispatch) => ({
-      deleteListItem: (expense) => dispatch(deleteListItem(expense))
+      deleteListItem: () => dispatch(deleteListItem()),
+      deleteAll: () => dispatch(deleteAll()),
+      pushToList: (placeNameLi) => dispatch(pushToList(placeNameLi))
   });
 
 export default connect(mapStatetoProps, mapDispatchToProps)(Map);

@@ -1,3 +1,5 @@
+import { deleteListItem } from '../actions/actions'
+
 const defaultState = {
     imageTime: 0,
     worldPlace: '',
@@ -30,11 +32,22 @@ const defaultState = {
 
 export default (state = defaultState, action) => {
     switch (action.type) {
-        case 'ADD_EXPENSE':
-            return [
+        case 'DELETE_ALL':
+            return {
                 ...state,
-                action.expense
-            ];
+                savedcities: []
+            };
+        case 'DELETE_LIST_ITEM':
+            console.log(state.savedcities)
+           return {
+           ...state,
+               savedcities : state.savedcities.map(listItem => document.querySelector('#checkBox').checked ? '' : listItem)
+           };
+        case 'PUSH_TO_LIST':
+            return {
+                ...state,
+                savedcities:  [...state.savedcities, action.li]
+            };
         default:
             return state;
     }

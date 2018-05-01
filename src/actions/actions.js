@@ -1,10 +1,10 @@
 import uuid from 'uuid';
 
 // ADD_EXPENSE
-export const addExpense = (expense) => ({
-    type: 'ADD_EXPENSE',
-    expense
-});
+// export const addExpense = (expense) => ({
+//     type: 'ADD_EXPENSE',
+//     expense
+// });
 
 // export const startAddExpense = (expenseData = {}) => {
 //     return (dispatch, getState) => {
@@ -27,10 +27,19 @@ export const addExpense = (expense) => ({
 // };
 
 // REMOVE_EXPENSE
-export const deleteListItem = ({ id } = {}) => ({
-    type: 'DELETE_LIST_ITEM',
-    id
+export const deleteListItem = () => ({
+    type: 'DELETE_LIST_ITEM'
 });
+
+export const deleteAll = () => ({
+    type: 'DELETE_ALL'
+});
+
+export const pushToList = ({li} = {}) => ({
+    type: 'PUSH_TO_LIST',
+    li: li
+});
+
 
 // export const startRemoveExpense = ({ id } = {}) => {
 //     return (dispatch, getState) => {
