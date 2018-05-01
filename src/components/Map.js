@@ -1,41 +1,14 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import 'raw-loader';
+import { deleteListItem } from "../actions/actions"
 import '../stylesheets/style.css';
 
 
 class Map extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      imageTime: 0,
-      worldPlace: '',
-      countryShortName: '',
-      suffix: "px",
-      savedcities: [],
-      wheatherAllWorld: 0,
-      wheatherAllWorldF: 0,
-      offsetWorld: 0,
-      wheatherIconWorld: '',
-      zoombool: false,
-      maxlat: 0,
-      minlon: 0,
-      maxColumn: 0,
-      maxRow: 0,
-      day: '',
-      curentHour: 0,
-      curentMin: 0,
-      offsetHoursWorld: 0,
-      guadalajaraHours: 0,
-      curentHourWorld: 0,
-      imageLat: 0,
-      imageLon: 0,
-      imageLatRound: 0,
-      imageLonRound: 0,
-      index: 0,
-      imageOffsetTop: 0,
-      imageOffsetLeft: 0,
-    };
-    console.log(this.state);
+    this.state = this.props.state;
   }
 
   getLatLonZoom = (e) => {
@@ -252,17 +225,6 @@ class Map extends React.Component {
     }
 
 
-    fetchTempJson() {
-      let lat = this.state.imageLat;
-      let lon = this.state.imageLon;
-      async function fetchTempC() {
-        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&APPID=261e313010ab3d43b1344ab9eba64cfa`, {});
-        return response.json();
-      }
-      return fetchTempC();
-    }
-
-
     fetchTempWorld(e) {
       let lat = this.state.imageLat;
       let lon = this.state.imageLon;
@@ -274,6 +236,7 @@ class Map extends React.Component {
     }
 
     fetchCityName() {
+        console.log(this.state.imageLat)
       let lat = this.state.imageLat;
       let lon = this.state.imageLon;
       async function fetchTempC() {
@@ -313,7 +276,7 @@ class Map extends React.Component {
             savedList.innerHTML = this.state.savedcities.sort((a,b) => b.index - a.index).map(city => {
               return `
               <li>
-              <input type="checkbox" data-index=${i} id="item${i}"> <span> ${city.worldPlace} ${city.countryShortName}</span>
+              <input type="checkbox" data-index=${city.index} id="item${city.index}"> <span> ${city.worldPlace} ${city.countryShortName}</span>
               <span>  ${Math.round(city.tempC)}C|   ${Math.round(city.tempF)}F  ${city.day} ${city.curentHour}:${city.minsWorld}h</span><img className="icon-AllWorld" src='/content/${city.icon}.png' width="70px" height="70px" />
               <span class="textAlighnRight"> Lat:${city.imageLatRoundLet} Lon:${city.imageLonRoundLet} </span>
               </li>
@@ -336,119 +299,126 @@ class Map extends React.Component {
       document.querySelectorAll('.img').forEach(option => option.addEventListener('click', this.zoom));
     }
 
+    onDelete = () => {
+    this.props.deleteListItem;
+}
 
     render() {
       return (
         <div>
         <div className="body-container">
-        <div className="world-map" onClick={this.getAllData} onMouseMove={this.displayLonLat} onMouseOver={this.displayOn} onMouseOut={this.displayOff}>
-        <div className="img img1" id="0"></div>
-        <div className="img img1" id="1"></div>
-        <div className="img img2" id="2"></div>
-        <div className="img img3" id="3"></div>
-        <div className="img img4" id="4"></div>
-        <div className="img img5" id="5"></div>
-        <div className="img img6" id="6"></div>
-        <div className="img img7" id="7"></div>
-        <div className="img img8" id="8"></div>
-        <div className="img img9" id="9"></div>
-        <div className="img img10" id="10"></div>
-        <div className="img img11" id="11"></div>
-        <div className="img img12" id="12"></div>
-        <div className="img img13" id="13"></div>
-        <div className="img img14" id="14"></div>
-        <div className="img img15" id="15"></div>
-        <div className="img img16" id="16"></div>
-        <div className="img img17" id="17"></div>
-        <div className="img img18" id="18"></div>
-        <div className="img img19" id="19"></div>
-        <div className="img img20" id="20"></div>
-        <div className="img img21" id="21"></div>
-        <div className="img img22" id="22"></div>
-        <div className="img img23" id="23"></div>
-        <div className="img img24" id="24"></div>
-        <div className="img img25" id="25"></div>
-        <div className="img img26" id="26"></div>
-        <div className="img img27" id="27"></div>
-        <div className="img img28" id="28"></div>
-        <div className="img img29" id="29"></div>
-        <div className="img img30" id="30"></div>
-        <div className="img img31" id="31"></div>
-        <div className="img img32" id="32"></div>
-        <div className="img img33" id="33"></div>
-        <div className="img img34" id="34"></div>
-        <div className="img img35" id="35"></div>
-        <div className="img img36" id="36"></div>
-        <div className="img img37" id="37"></div>
-        <div className="img img38" id="38"></div>
-        <div className="img img39" id="39"></div>
-        <div className="img img40" id="40"></div>
-        <div className="img img41" id="41"></div>
-        <div className="img img42" id="42"></div>
-        <div className="img img43" id="43"></div>
-        <div className="img img44" id="44"></div>
-        <div className="img img45" id="45"></div>
-        <div className="img img46" id="46"></div>
-        <div className="img img47" id="47"></div>
-        <div className="img img48" id="48"></div>
-        <div className="img img49" id="49"></div>
-        <div className="img img50" id="50"></div>
-        <div className="img img51" id="51"></div>
-        <div className="img img52" id="52"></div>
-        <div className="img img53" id="53"></div>
-        <div className="img img54" id="54"></div>
-        <div className="img img55" id="55"></div>
-        <div className="img img56" id="56"></div>
-        <div className="img img57" id="57"></div>
-        <div className="img img58" id="58"></div>
-        <div className="img img59" id="59"></div>
-        <div className="img img60" id="60"></div>
-        <div className="img img61" id="61"></div>
-        <div className="img img62" id="62"></div>
-        <div className="img img63" id="63"></div>
-        <div className="img img64" id="64"></div>
-        <div className="img img65" id="65"></div>
-        <div className="img img66" id="66"></div>
-        <div className="img img67" id="67"></div>
-        <div className="img img68" id="68"></div>
-        <div className="img img69" id="69"></div>
-        <div className="img img70" id="70"></div>
-        <div className="img img71" id="71"></div>
-        <div className="img img72" id="72"></div>
-        <div className="img img73" id="73"></div>
-        <div className="img img74" id="74"></div>
-        <div className="img img75" id="75"></div>
-        <div className="img img76" id="76"></div>
-        <div className="img img77" id="77"></div>
-        <div className="img img78" id="78"></div>
-        <div className="img img79" id="79"></div>
-        <div className="img img80" id="80"></div>
-        <div className="img img81" id="81"></div>
-        <div className="img img82" id="82"></div>
-        <div className="img img83" id="83"></div>
-        <div className="img img84" id="84"></div>
-        <div className="img img85" id="85"></div>
-        <div className="img img86" id="86"></div>
-        <div className="img img87" id="87"></div>
-        <div className="img img88" id="88"></div>
-        <div className="img img89" id="89"></div>
-        <div className="img img90" id="90"></div>
-        <div className="img img91" id="91"></div>
-        <div className="img img92" id="92"></div>
-        <div className="img img93" id="93"></div>
-        <div className="img img94" id="94"></div>
-        <div className="img img95" id="95"></div>
-        <div className="img img96" id="96"></div>
-        <div className="img img97" id="97"></div>
-        <div className="img img98" id="98"></div>
-        <div className="img img99" id="99"></div>
-        <div className="zoomed" onClick={this.zoomout} onMouseMove={this.displayZoomed}></div>
-        </div>
+            <div className="world-map" onClick={this.getAllData} onMouseMove={this.displayLonLat} onMouseOver={this.displayOn} onMouseOut={this.displayOff}>
+                <div className="img img1" id="0" data-minlon="" data-maxlat=""></div>
+                <div className="img img1" id="1" data-minlon="" data-maxlat=""></div>
+                <div className="img img2" id="2" data-minlon="" data-maxlat=""></div>
+                <div className="img img3" id="3" data-minlon="" data-maxlat=""></div>
+                <div className="img img4" id="4" data-minlon="" data-maxlat=""></div>
+                <div className="img img5" id="5" data-minlon="" data-maxlat=""></div>
+                <div className="img img6" id="6" data-minlon="" data-maxlat=""></div>
+                <div className="img img7" id="7" data-minlon="" data-maxlat=""></div>
+                <div className="img img8" id="8" data-minlon="" data-maxlat=""></div>
+                <div className="img img9" id="9" data-minlon="" data-maxlat=""></div>
+                <div className="img img10" id="10" data-minlon="" data-maxlat=""></div>
+                <div className="img img11" id="11" data-minlon="" data-maxlat=""></div>
+                <div className="img img12" id="12" data-minlon="" data-maxlat=""></div>
+                <div className="img img13" id="13" data-minlon="" data-maxlat=""></div>
+                <div className="img img14" id="14" data-minlon="" data-maxlat=""></div>
+                <div className="img img15" id="15" data-minlon="" data-maxlat=""></div>
+                <div className="img img16" id="16" data-minlon="" data-maxlat=""></div>
+                <div className="img img17" id="17" data-minlon="" data-maxlat=""></div>
+                <div className="img img18" id="18" data-minlon="" data-maxlat=""></div>
+                <div className="img img19" id="19" data-minlon="" data-maxlat=""></div>
+                <div className="img img20" id="20" data-minlon="" data-maxlat=""></div>
+                <div className="img img21" id="21" data-minlon="" data-maxlat=""></div>
+                <div className="img img22" id="22" data-minlon="" data-maxlat=""></div>
+                <div className="img img23" id="23" data-minlon="" data-maxlat=""></div>
+                <div className="img img24" id="24" data-minlon="" data-maxlat=""></div>
+                <div className="img img25" id="25" data-minlon="" data-maxlat=""></div>
+                <div className="img img26" id="26" data-minlon="" data-maxlat=""></div>
+                <div className="img img27" id="27" data-minlon="" data-maxlat=""></div>
+                <div className="img img28" id="28" data-minlon="" data-maxlat=""></div>
+                <div className="img img29" id="29" data-minlon="" data-maxlat=""></div>
+                <div className="img img30" id="30" data-minlon="" data-maxlat=""></div>
+                <div className="img img31" id="31" data-minlon="" data-maxlat=""></div>
+                <div className="img img32" id="32" data-minlon="" data-maxlat=""></div>
+                <div className="img img33" id="33" data-minlon="" data-maxlat=""></div>
+                <div className="img img34" id="34" data-minlon="" data-maxlat=""></div>
+                <div className="img img35" id="35" data-minlon="" data-maxlat=""></div>
+                <div className="img img36" id="36" data-minlon="" data-maxlat=""></div>
+                <div className="img img37" id="37" data-minlon="" data-maxlat=""></div>
+                <div className="img img38" id="38" data-minlon="" data-maxlat=""></div>
+                <div className="img img39" id="39" data-minlon="" data-maxlat=""></div>
+                <div className="img img40" id="40" data-minlon="" data-maxlat=""></div>
+                <div className="img img41" id="41" data-minlon="" data-maxlat=""></div>
+                <div className="img img42" id="42" data-minlon="" data-maxlat=""></div>
+                <div className="img img43" id="43" data-minlon="" data-maxlat=""></div>
+                <div className="img img44" id="44" data-minlon="" data-maxlat=""></div>
+                <div className="img img45" id="45" data-minlon="" data-maxlat=""></div>
+                <div className="img img46" id="46" data-minlon="" data-maxlat=""></div>
+                <div className="img img47" id="47" data-minlon="" data-maxlat=""></div>
+                <div className="img img48" id="48" data-minlon="" data-maxlat=""></div>
+                <div className="img img49" id="49" data-minlon="" data-maxlat=""></div>
+                <div className="img img50" id="50" data-minlon="" data-maxlat=""></div>
+                <div className="img img51" id="51" data-minlon="" data-maxlat=""></div>
+                <div className="img img52" id="52" data-minlon="" data-maxlat=""></div>
+                <div className="img img53" id="53" data-minlon="" data-maxlat=""></div>
+                <div className="img img54" id="54" data-minlon="" data-maxlat=""></div>
+                <div className="img img55" id="55" data-minlon="" data-maxlat=""></div>
+                <div className="img img56" id="56" data-minlon="" data-maxlat=""></div>
+                <div className="img img57" id="57" data-minlon="" data-maxlat=""></div>
+                <div className="img img58" id="58" data-minlon="" data-maxlat=""></div>
+                <div className="img img59" id="59" data-minlon="" data-maxlat=""></div>
+                <div className="img img60" id="60" data-minlon="" data-maxlat=""></div>
+                <div className="img img61" id="61" data-minlon="" data-maxlat=""></div>
+                <div className="img img62" id="62" data-minlon="" data-maxlat=""></div>
+                <div className="img img63" id="63" data-minlon="" data-maxlat=""></div>
+                <div className="img img64" id="64" data-minlon="" data-maxlat=""></div>
+                <div className="img img65" id="65" data-minlon="" data-maxlat=""></div>
+                <div className="img img66" id="66" data-minlon="" data-maxlat=""></div>
+                <div className="img img67" id="67" data-minlon="" data-maxlat=""></div>
+                <div className="img img68" id="68" data-minlon="" data-maxlat=""></div>
+                <div className="img img69" id="69" data-minlon="" data-maxlat=""></div>
+                <div className="img img70" id="70" data-minlon="" data-maxlat=""></div>
+                <div className="img img71" id="71" data-minlon="" data-maxlat=""></div>
+                <div className="img img72" id="72" data-minlon="" data-maxlat=""></div>
+                <div className="img img73" id="73" data-minlon="" data-maxlat=""></div>
+                <div className="img img74" id="74" data-minlon="" data-maxlat=""></div>
+                <div className="img img75" id="75" data-minlon="" data-maxlat=""></div>
+                <div className="img img76" id="76" data-minlon="" data-maxlat=""></div>
+                <div className="img img77" id="77" data-minlon="" data-maxlat=""></div>
+                <div className="img img78" id="78" data-minlon="" data-maxlat=""></div>
+                <div className="img img79" id="79" data-minlon="" data-maxlat=""></div>
+                <div className="img img80" id="80" data-minlon="" data-maxlat=""></div>
+                <div className="img img81" id="81" data-minlon="" data-maxlat=""></div>
+                <div className="img img82" id="82" data-minlon="" data-maxlat=""></div>
+                <div className="img img83" id="83" data-minlon="" data-maxlat=""></div>
+                <div className="img img84" id="84" data-minlon="" data-maxlat=""></div>
+                <div className="img img85" id="85" data-minlon="" data-maxlat=""></div>
+                <div className="img img86" id="86" data-minlon="" data-maxlat=""></div>
+                <div className="img img87" id="87" data-minlon="" data-maxlat=""></div>
+                <div className="img img88" id="88" data-minlon="" data-maxlat=""></div>
+                <div className="img img89" id="89" data-minlon="" data-maxlat=""></div>
+                <div className="img img90" id="90" data-minlon="" data-maxlat=""></div>
+                <div className="img img91" id="91" data-minlon="" data-maxlat=""></div>
+                <div className="img img92" id="92" data-minlon="" data-maxlat=""></div>
+                <div className="img img93" id="93" data-minlon="" data-maxlat=""></div>
+                <div className="img img94" id="94" data-minlon="" data-maxlat=""></div>
+                <div className="img img95" id="95" data-minlon="" data-maxlat=""></div>
+                <div className="img img96" id="96" data-minlon="" data-maxlat=""></div>
+                <div className="img img97" id="97" data-minlon="" data-maxlat=""></div>
+                <div className="img img98" id="98" data-minlon="" data-maxlat=""></div>
+                <div className="img img99" id="99" data-minlon="" data-maxlat=""></div>
+                <div className="zoomed" onClick={this.zoomout} onMouseMove={this.displayZoomed}></div>
+            </div>
         <div className="wrapper">
-        <h2 onClick={this.clickTest}>RECENT PLACES</h2>
+        <h2>RECENT PLACES</h2>
         <p></p>
+        <div>
         <ul className="list">
         </ul>
+          <button onClick={this.onDelete}>Delete</button>
+          <button>Delete All</button>
+        </div>
         </div>
 
         <div className="movingDiv">
@@ -489,4 +459,13 @@ class Map extends React.Component {
   }
 
 
-  export default Map;
+  const mapStatetoProps = (state) => ({
+      state: state.map
+  })
+
+
+  const mapDispatchToProps = (dispatch) => ({
+      deleteListItem: (expense) => dispatch(deleteListItem(expense))
+  });
+
+export default connect(mapStatetoProps, mapDispatchToProps)(Map);
