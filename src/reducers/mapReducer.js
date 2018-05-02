@@ -27,7 +27,7 @@ const defaultState = {
     imageLonRound: 0,
     index: 0,
     imageOffsetTop: 0,
-    imageOffsetLeft: 0
+    imageOffsetLeft: 0,
 };
 
 export default (state = defaultState, action) => {
@@ -38,16 +38,22 @@ export default (state = defaultState, action) => {
                 savedcities: []
             };
         case 'DELETE_LIST_ITEM':
-            console.log(state.savedcities)
+            let newArray = [];
+            action.indexes.map(city => newArray.push(state.savedcities[city]))
            return {
            ...state,
-               savedcities : state.savedcities.map(listItem => document.querySelector('#checkBox').checked ? '' : listItem)
+               savedcities : newArray
            };
         case 'PUSH_TO_LIST':
             return {
                 ...state,
-                savedcities:  [...state.savedcities, action.li]
+                savedcities:  [...state.savedcities, action.li ]
             };
+        case 'INDEX_PLUS':
+            return {
+                ...state,
+                index: state.index + 1
+            }
         default:
             return state;
     }

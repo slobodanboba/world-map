@@ -13,3 +13,4 @@ export const getWidthHeight = () => {
     let widthDevider = imageWidth/100;
     return { heightDevider, widthDevider }
 }
+

@@ -10,6 +10,7 @@ class MovingDiv extends React.Component {
         this.state = this.props.state;
     }
 
+
     render() {
 
       return (

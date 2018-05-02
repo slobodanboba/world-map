@@ -1,7 +1,7 @@
 import React from 'react';
 import ListItem from "./listItem"
 import {connect} from "react-redux";
-import {deleteAll, deleteListItem} from "../actions/actions";
+import {deleteAll, deleteListItem } from "../actions/actions";
 
 class List extends React.Component {
     constructor(props) {
@@ -10,7 +10,10 @@ class List extends React.Component {
     }
 
     onDelete = () => {
-        this.props.deleteListItem();
+        let ckecked = document.querySelectorAll('#checkBox');
+        let checkedArray = [...ckecked];
+        let indexes = checkedArray.map((e, i) => !e.checked ? i : '').filter(String)
+        this.props.deleteListItem({indexes: indexes});
     }
 
     onDeleteAll = () => {
@@ -21,7 +24,7 @@ class List extends React.Component {
         let list = this.props.city;
         let listItems = list.sort((a, b) => b.index - a.index).map((city,i) =>
                 (
-                    <li><ListItem key={i} i={i} city={city} /></li>
+                    <li key={city.index}><ListItem className="liItem" city={city} /></li>
                 )
             );
         return  (
@@ -43,7 +46,7 @@ const mapStatetoProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    deleteListItem: () => dispatch(deleteListItem()),
+    deleteListItem: (indexes) => dispatch(deleteListItem(indexes)),
     deleteAll: () => dispatch(deleteAll()),
 });
 

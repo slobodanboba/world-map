@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from "react-redux";
-import {deleteAll, deleteListItem, pushToList} from "../actions/actions";
+import {deleteAll, deleteListItem } from "../actions/actions";
 
 
 class MapItems extends React.Component {
@@ -9,11 +9,21 @@ class MapItems extends React.Component {
         this.state = this.props.state;
     }
 
+    displayOn = () => {
+        if (!window.matchMedia("(max-width: 1000px)").matches) {
+            document.querySelector('.movingDiv').style.display = "block";
+        }
+    }
+    displayOff = () => {
+        document.querySelector('.movingDiv').style.display = "none";
+    }
+
+
 
     render() {
 
         return (
-            <div className="world-map" onClick={this.props.pushObjectList} onMouseMove={this.props.displayLonLat} onMouseOver={this.props.displayOn} onMouseOut={this.props.displayOff}>
+            <div className="world-map" onClick={this.props.pushObjectList} onMouseMove={this.props.displayLonLat} onMouseOver={this.displayOn} onMouseOut={this.displayOff}>
                 <div className="img img1" id="0" data-minlon="" data-maxlat=""></div>
                 <div className="img img1" id="1" data-minlon="" data-maxlat=""></div>
                 <div className="img img2" id="2" data-minlon="" data-maxlat=""></div>

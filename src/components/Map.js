@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import 'raw-loader';
 import { pushToList } from "../actions/actions";
+import { indexPlus } from "../actions/actions";
 import List from "./list";
 import MovingDiv from "./MovingDiv";
 import CornerInfo from "./CornerInfo";
@@ -75,132 +76,26 @@ class Map extends React.Component {
       document.querySelector('.spanLon').innerHTML = imageLonRoundLet;
   }
 
-  displayOn = () => {
-    if (!window.matchMedia("(max-width: 1000px)").matches) {
-      document.querySelector('.movingDiv').style.display = "block";
-    }
-  }
-
-  displayOff = () => {
-    document.querySelector('.movingDiv').style.display = "none";
-  }
-
-  zoom  = (e) => {
-    if((e.ctrlKey || e.shiftKey) && !this.state.zoombool) {
-      document.querySelector('.zoomed').style.backgroundImage = `url(./images/img${e.target.id}.jpg)`;
-      document.querySelector('.zoomed').style.display = "block";
-      let maxRow = Math.floor(e.target.id/10);
-      let maxColumn = e.target.id%10;
-      this.setState(() => ({
-        maxlat: (90 - (maxRow  * 18)),
-        minlon: maxColumn * 36 - 180,
-        zoombool: true,
-      }));
-    }};
+    zoom  = (e) => {
+        if((e.ctrlKey || e.shiftKey) && !this.state.zoombool) {
+            document.querySelector('.zoomed').style.backgroundImage = `url(./images/img${e.target.id}.jpg)`;
+            document.querySelector('.zoomed').style.display = "block";
+            let maxRow = Math.floor(e.target.id/10);
+            let maxColumn = e.target.id%10;
+            this.setState(() => ({
+                maxlat: (90 - (maxRow  * 18)),
+                minlon: maxColumn * 36 - 180,
+                zoombool: true,
+            }));
+        }};
 
     zoomout = (e) => {
-      if((e.ctrlKey || e.shiftKey) && this.state.zoombool) {
-        document.querySelector('.zoomed').style.display = "none";
-        this.setState(() => ({
-          zoombool: false,
-        }));
-      }
-    }
-
-
-    getTimeWorld = (e) => {
-        const { imageLatLet, imageLonLet } = this.getLatLon(e);
-      fetch(` https://maps.googleapis.com/maps/api/timezone/json?location=${imageLatLet},${imageLonLet}&timestamp=1331161200&key=AIzaSyANpHwd0ZvP_2qrvqEEp-5l6NS3LkwxSbY `)
-      .then(response => response.json())
-      .then(world =>  {
-        let offsetWorld = world.rawOffset
-        const timeWorld = new Date().getHours()
-        const dayNow = new Date().getDay()
-        const offsetHours = (offsetWorld/3600);
-        let curentDay;
-        if ((offsetHours + timeWorld + this.state.guadalajaraHours + 1) > 23) {
-          curentDay = dayNow + 1
-        } else if ((offsetHours + timeWorld + this.state.guadalajaraHours + 1) < 0) {
-          curentDay = dayNow - 1
-        } else {
-          curentDay = dayNow
+        if((e.ctrlKey || e.shiftKey) && this.state.zoombool) {
+            document.querySelector('.zoomed').style.display = "none";
+            this.setState(() => ({
+                zoombool: false,
+            }));
         }
-        switch (curentDay) {
-          case 0:
-          document.querySelector('.cornerDay1000').innerHTML = "Sunday";
-          this.setState(() => ({
-            day: "Sunday"
-          }));
-          break;
-          case 1:
-          document.querySelector('.cornerDay1000').innerHTML = "Monday";
-          this.setState(() => ({
-            day: "Monday"
-          }));
-          break;
-          case 2:
-          document.querySelector('.cornerDay1000').innerHTML = "Thusday";
-          this.setState(() => ({
-            day: "Thusday"
-          }));
-          break;
-          case 3:
-          document.querySelector('.cornerDay1000').innerHTML = "wednsday";
-          this.setState(() => ({
-            day: "wednsday"
-          }));
-          break;
-          case 4:
-          document.querySelector('.cornerDay1000').innerHTML = "Thursday";
-          this.setState(() => ({
-            day: "Thursday"
-          }));
-          break;
-          case 5:
-          document.querySelector('.cornerDay1000').innerHTML = "Friday";
-          this.setState(() => ({
-            day: "Friday"
-          }));
-          break;
-          case 6:
-          document.querySelector('.cornerDay1000').innerHTML = "Saturday";
-          this.setState(() => ({
-            day: "Saturday"
-          }));
-        }
-        const nowWorld = new Date();
-        const minsWorld = nowWorld.getMinutes() < 10 ? "0" + nowWorld.getMinutes() : nowWorld.getMinutes();
-        document.querySelector(".minutesWorld").innerHTML = `:${minsWorld}h`;
-        this.setState(() => ({
-          curentMin: minsWorld
-        }))
-        const hourWorld = nowWorld.getHours();
-        const offsetHoursWorld = (offsetWorld / 3600);
-        const d = new Date();
-        const guadalajaraOffsetHours = d.getTimezoneOffset();
-        const guadalajaraHours = (guadalajaraOffsetHours / 60);
-        const curentHourWorld =  Math.floor(hourWorld + offsetHoursWorld + guadalajaraHours + 1);
-        if (curentHourWorld >= 24) {
-          let nextDay = curentHourWorld - 24
-          document.querySelector(".hoursWorld").innerHTML = `${nextDay}`;
-          this.setState(() => ({
-            curentHourWorld: nextDay
-          }))
-        }
-        else if (curentHourWorld < 0) {
-          let previousDay = curentHourWorld + 24
-          document.querySelector(".hoursWorld").innerHTML = `${previousDay}`;
-          this.setState(() => ({
-            curentHourWorld: previousDay
-          }))
-        }
-        else {
-          document.querySelector(".hoursWorld").innerHTML = `${curentHourWorld}`;
-          this.setState(() => ({
-            curentHourWorld: curentHourWorld
-          }))
-        }
-      })
     }
 
 
@@ -213,14 +108,110 @@ class Map extends React.Component {
       return fetchTempC(e)
     }
 
+    getTimeWorld = (e) => {
+        const { imageLatLet, imageLonLet } = this.getLatLon(e);
+        fetch(` https://maps.googleapis.com/maps/api/timezone/json?location=${imageLatLet},${imageLonLet}&timestamp=1331161200&key=AIzaSyANpHwd0ZvP_2qrvqEEp-5l6NS3LkwxSbY `)
+            .then(response => response.json())
+            .then(world =>  {
+                let offsetWorld = world.rawOffset
+                const timeWorld = new Date().getHours()
+                const dayNow = new Date().getDay()
+                const offsetHours = (offsetWorld/3600);
+                let curentDay;
+                if ((offsetHours + timeWorld + this.state.guadalajaraHours + 1) > 23) {
+                    curentDay = dayNow + 1
+                } else if ((offsetHours + timeWorld + this.state.guadalajaraHours + 1) < 0) {
+                    curentDay = dayNow - 1
+                } else {
+                    curentDay = dayNow
+                }
+                switch (curentDay) {
+                    case 0:
+                        document.querySelector('.cornerDay1000').innerHTML = "Sunday";
+                        this.setState(() => ({
+                            day: "Sunday"
+                        }));
+                        break;
+                    case 1:
+                        document.querySelector('.cornerDay1000').innerHTML = "Monday";
+                        this.setState(() => ({
+                            day: "Monday"
+                        }));
+                        break;
+                    case 2:
+                        document.querySelector('.cornerDay1000').innerHTML = "Thusday";
+                        this.setState(() => ({
+                            day: "Thusday"
+                        }));
+                        break;
+                    case 3:
+                        document.querySelector('.cornerDay1000').innerHTML = "wednsday";
+                        this.setState(() => ({
+                            day: "wednsday"
+                        }));
+                        break;
+                    case 4:
+                        document.querySelector('.cornerDay1000').innerHTML = "Thursday";
+                        this.setState(() => ({
+                            day: "Thursday"
+                        }));
+                        break;
+                    case 5:
+                        document.querySelector('.cornerDay1000').innerHTML = "Friday";
+                        this.setState(() => ({
+                            day: "Friday"
+                        }));
+                        break;
+                    case 6:
+                        document.querySelector('.cornerDay1000').innerHTML = "Saturday";
+                        this.setState(() => ({
+                            day: "Saturday"
+                        }));
+                }
+                const nowWorld = new Date();
+                const minsWorld = nowWorld.getMinutes() < 10 ? "0" + nowWorld.getMinutes() : nowWorld.getMinutes();
+                document.querySelector(".minutesWorld").innerHTML = `:${minsWorld}h`;
+                this.setState(() => ({
+                    curentMin: minsWorld
+                }))
+                const hourWorld = nowWorld.getHours();
+                const offsetHoursWorld = (offsetWorld / 3600);
+                const d = new Date();
+                const guadalajaraOffsetHours = d.getTimezoneOffset();
+                const guadalajaraHours = (guadalajaraOffsetHours / 60);
+                const curentHourWorld =  Math.floor(hourWorld + offsetHoursWorld + guadalajaraHours + 1);
+                if (curentHourWorld >= 24) {
+                    let nextDay = curentHourWorld - 24
+                    document.querySelector(".hoursWorld").innerHTML = `${nextDay}`;
+                    this.setState(() => ({
+                        curentHourWorld: nextDay
+                    }))
+                }
+                else if (curentHourWorld < 0) {
+                    let previousDay = curentHourWorld + 24
+                    document.querySelector(".hoursWorld").innerHTML = `${previousDay}`;
+                    this.setState(() => ({
+                        curentHourWorld: previousDay
+                    }))
+                }
+                else {
+                    document.querySelector(".hoursWorld").innerHTML = `${curentHourWorld}`;
+                    this.setState(() => ({
+                        curentHourWorld: curentHourWorld
+                    }))
+                }
+            })
+    }
 
     pushObjectList = (e) => {
         const {imageLatLet, imageLonLet} = this.getLatLon(e);
         this.getTimeWorld(e);
+        this.zoom(e);
         this.fetchTempWorld(e).then(data => {
             let tempC = data.main.temp;
             let tempF = (tempC * 1.8) + 32;
             let icon = data.weather[0].icon;
+            let indexProp = this.props.state.index;
             document.querySelector('.movingDivmax1000').style.display = "block";
             document.querySelector('.spanLat1000').innerHTML = imageLatLet.toFixed(2);
             document.querySelector('.spanLon1000').innerHTML = imageLonLet.toFixed(2);
@@ -238,8 +229,8 @@ class Map extends React.Component {
                     }
                     document.querySelector(".cityCorner1000").innerHTML = `${city}`;
                     const placeNameLi = {
-                        key: this.state.index,
-                        index: this.state.index,
+                        key: indexProp,
+                        index: indexProp,
                         worldPlace: city,
                         countryShortName: countryName,
                         tempC: tempC,
@@ -252,14 +243,10 @@ class Map extends React.Component {
                         icon: icon
                     }
                     this.props.pushToList({li: placeNameLi});
-                    this.setState((prevState) => ({
-                        index: prevState.index + 1
-                    }));
+                    this.props.indexPlus();
                 })
         })
     }
-
-
 
     render() {
       return (
@@ -268,8 +255,6 @@ class Map extends React.Component {
             <MapItems
                 pushObjectList={this.pushObjectList}
                 displayLonLat={this.displayLonLat}
-                displayOn={this.displayOn}
-                displayOff={this.displayOff}
                 zoomout={this.zoomout}
                 displayZoomed={this.displayZoomed}
             />
@@ -287,7 +272,8 @@ class Map extends React.Component {
   })
 
   const mapDispatchToProps = (dispatch) => ({
-      pushToList: (placeNameLi) => dispatch(pushToList(placeNameLi))
+      pushToList: (placeNameLi) => dispatch(pushToList(placeNameLi)),
+      indexPlus: () => dispatch(indexPlus())
   });
 
 export default connect(mapStatetoProps, mapDispatchToProps)(Map);
