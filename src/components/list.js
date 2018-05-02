@@ -1,7 +1,21 @@
 import React from 'react';
 import ListItem from "./listItem"
+import {connect} from "react-redux";
+import {deleteAll, deleteListItem} from "../actions/actions";
 
 class List extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = this.props.state;
+    }
+
+    onDelete = () => {
+        this.props.deleteListItem();
+    }
+
+    onDeleteAll = () => {
+        this.props.deleteAll();
+    }
 
     render() {
         let list = this.props.city;
@@ -18,11 +32,20 @@ class List extends React.Component {
                     {listItems}
                 </ul>
                 <button onClick={this.onDelete}>Delete</button>
-                <button onClick={this.props.onDeleteAll}>Delete All</button>
+                <button onClick={this.onDeleteAll}>Delete All</button>
             </div>
         );
     }
 }
 
+const mapStatetoProps = (state) => ({
+    state: state.map
+})
 
-export default List;
+const mapDispatchToProps = (dispatch) => ({
+    deleteListItem: () => dispatch(deleteListItem()),
+    deleteAll: () => dispatch(deleteAll()),
+});
+
+export default connect(mapStatetoProps, mapDispatchToProps)(List);
+

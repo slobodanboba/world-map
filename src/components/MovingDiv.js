@@ -1,9 +1,16 @@
 import React from 'react';
+import {connect} from "react-redux";
+import {deleteAll, deleteListItem} from "../actions/actions";
 
 
 
 class MovingDiv extends React.Component {
-  render() {
+    constructor(props) {
+        super(props);
+        this.state = this.props.state;
+    }
+
+    render() {
 
       return (
           <div className="movingDiv">
@@ -18,5 +25,14 @@ class MovingDiv extends React.Component {
     }
  }
 
+const mapStatetoProps = (state) => ({
+    state: state.map
+})
 
-export default MovingDiv;
+const mapDispatchToProps = (dispatch) => ({
+    deleteListItem: () => dispatch(deleteListItem()),
+    deleteAll: () => dispatch(deleteAll()),
+});
+
+export default connect(mapStatetoProps, mapDispatchToProps)(MovingDiv);
+
