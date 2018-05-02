@@ -5,7 +5,10 @@ import { deleteListItem } from "../actions/actions";
 import { deleteAll } from "../actions/actions";
 import { pushToList } from "../actions/actions";
 import List from "./list";
+import MovingDiv from "./MovingDiv";
+import CornerInfo from "./CornerInfo";
 import '../stylesheets/style.css';
+import {getWidthHeight} from "./utilities";
 
 
 class Map extends React.Component {
@@ -14,54 +17,44 @@ class Map extends React.Component {
     this.state = this.props.state;
   }
 
+    componentDidMount() {
+            document.querySelectorAll('.img').forEach(option => option.addEventListener('click', this.zoom));
+    }
+
   getLatLonZoom = (e) => {
-      this.scroll(e);
-      this.getWidthHeight(e);
-      let positionYZoom = e.pageY - this.state.imageOffsetTop;
-      let positionXZoom = e.pageX - this.state.imageOffsetLeft;
+      let imageOffsetTop = document.querySelector(".world-map").offsetTop;
+      let imageOffsetLeft = document.querySelector(".world-map").offsetLeft;
+      let positionYZoom = e.pageY - imageOffsetTop;
+      let positionXZoom = e.pageX - imageOffsetLeft;
       let imageLatZoom = (this.state.maxlat) - ((positionYZoom/this.state.heightDevider) * 0.18);
       let imageLonZoom = ((positionXZoom/this.state.widthDevider) * 0.36 - (-this.state.minlon));
-      console.log(e.pageY,this.state.imageOffsetTop,e.pageX, this.state.imageOffsetLeft, this.state.maxlat, positionYZoom,this.state.heightDevider , imageLatZoom , imageLonZoom );
-      this.setState(() => ({
-        imageLat: imageLatZoom,
-        imageLon: imageLatZoom,
-        imageLatRound: imageLatZoom,
-        imageLonRound: imageLatZoom,
-      }));
       return { imageLatZoom, imageLonZoom }
   }
 
   getLatLon = (e) => {
-      this.scroll(e);
-      this.getWidthHeight(e);
-      let positionY = e.pageY - this.state.imageOffsetTop;
-      let positionX = e.pageX - this.state.imageOffsetLeft;
-      let imageLatLet = (50 - positionY/this.state.heightDevider) * 1.8;
-      let imageLonLet = (positionX/this.state.widthDevider - 50) * 3.6;
+      const { heightDevider, widthDevider } = this.getWidthHeight(e);
+      let imageOffsetTop = document.querySelector(".world-map").offsetTop;
+      let imageOffsetLeft = document.querySelector(".world-map").offsetLeft;
+      let positionY = e.pageY - imageOffsetTop;
+      let positionX = e.pageX - imageOffsetLeft;
+      let imageLatLet = (50 - positionY/heightDevider) * 1.8;
+      let imageLonLet = (positionX/widthDevider - 50) * 3.6;
       let imageLatRoundLet = imageLatLet.toFixed(2);
       let imageLonRoundLet = imageLonLet.toFixed(2);
-      this.setState(() => ({
-        imageLat: imageLatLet,
-        imageLon: imageLonLet,
-        imageLatRound: imageLatRoundLet,
-        imageLonRound: imageLonRoundLet,
-      }));
       return { imageLatLet, imageLonLet, imageLatRoundLet, imageLonRoundLet }
   }
 
   displayLonLat = (e) => {
     if(!this.state.zoombool) {
-      this.getWidthHeight(e);
-      this.getLatLon(e);
+      const { imageLatLet, imageLonLet, imageLatRoundLet, imageLonRoundLet } = this.getLatLon(e);
       document.documentElement.style.setProperty("--pageX", e.pageX + this.state.suffix);
       document.documentElement.style.setProperty(`--pageY`, e.pageY + this.state.suffix);
-      document.querySelector('.spanLat').innerHTML = this.state.imageLatRound;
-      document.querySelector('.spanLon').innerHTML = this.state.imageLonRound;
+      document.querySelector('.spanLat').innerHTML = imageLatRoundLet;
+      document.querySelector('.spanLon').innerHTML = imageLonRoundLet;
     }
   }
 
   displayZoomed = (e) => {
-      this.getWidthHeight(e);
       const { imageLatZoom, imageLonZoom } = this.getLatLonZoom(e);
       let imageLatRoundLet = imageLatZoom.toFixed(2);
       let imageLonRoundLet = imageLonZoom.toFixed(2);
@@ -105,36 +98,25 @@ class Map extends React.Component {
     }
 
     getWidthHeight = () => {
-      this.addEventListener();
       let image = document.querySelector(".world-map");
       let theCSSpropWidth = window.getComputedStyle(image,null).getPropertyValue("width");
       let imageWidth = parseInt(theCSSpropWidth);
       let varHeight = imageWidth/2;
-      document.documentElement.style.setProperty("--height", varHeight + this.state.suffix);
+      let suffix = 'px';
+      document.documentElement.style.setProperty("--height", varHeight + suffix);
       let theCSSpropHeight = window.getComputedStyle(image,null).getPropertyValue("height");
       let imageHeight = parseInt(theCSSpropHeight);
       let listHeight = imageHeight - 100;
-      document.documentElement.style.setProperty("--listHeight", listHeight + this.state.suffix);
+      document.documentElement.style.setProperty("--listHeight", listHeight + suffix);
       let heightDevider = imageHeight/100;
       let widthDevider = imageWidth/100;
-      this.setState(() => ({
-        heightDevider: heightDevider,
-        widthDevider: widthDevider
-      }));
+      return { heightDevider, widthDevider }
     }
 
-    scroll = () => {
-      this.getWidthHeight();
-      let imageOffsetTop = document.querySelector(".world-map").offsetTop;
-      let imageOffsetLeft = document.querySelector(".world-map").offsetLeft;
-      this.setState(() => ({
-        imageOffsetTop,
-        imageOffsetLeft
-      }));
-    }
 
-    getTimeWorld = () => {
-      fetch(` https://maps.googleapis.com/maps/api/timezone/json?location=${this.state.imageLat},${this.state.imageLon}&timestamp=1331161200&key=AIzaSyANpHwd0ZvP_2qrvqEEp-5l6NS3LkwxSbY `)
+    getTimeWorld = (e) => {
+        const { imageLatLet, imageLonLet } = this.getLatLon(e);
+      fetch(` https://maps.googleapis.com/maps/api/timezone/json?location=${imageLatLet},${imageLonLet}&timestamp=1331161200&key=AIzaSyANpHwd0ZvP_2qrvqEEp-5l6NS3LkwxSbY `)
       .then(response => response.json())
       .then(world =>  {
         let offsetWorld = world.rawOffset
@@ -229,84 +211,74 @@ class Map extends React.Component {
 
 
     fetchTempWorld(e) {
-      let lat = this.state.imageLat;
-      let lon = this.state.imageLon;
-      async function fetchTempC() {
-        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&APPID=261e313010ab3d43b1344ab9eba64cfa`, {});
-        return response.json();
+        const { imageLatLet, imageLonLet } = this.getLatLon(e);
+      async function fetchTempC(e) {
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${imageLatLet}&lon=${imageLonLet}&units=metric&APPID=261e313010ab3d43b1344ab9eba64cfa`, {});
+        return response.json(e);
       }
-      return fetchTempC();
+      return fetchTempC(e)
     }
 
-    fetchCityName() {
-        console.log(this.state.imageLat)
-      let lat = this.state.imageLat;
-      let lon = this.state.imageLon;
-      async function fetchTempC() {
-        const response = await fetch(` https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=AIzaSyAhbhZNE6A-Zcg49SMCyO7r_lH4MCDylRc`, {});
-        return response.json();
-      }
-      return fetchTempC();
-    }
 
     pushObjectList = (e) => {
-      let lat = this.state.imageLat;
-      let lon = this.state.imageLon;
-      this.fetchTempWorld().then(data => {
-        let tempC = data.main.temp;
-        let tempF = (tempC * 1.8)+32;
-        let icon = data.weather[0].icon;
-        console.log(icon);
-        document.querySelector('.movingDivmax1000').style.display = "block";
-        document.querySelector('.spanLat1000').innerHTML = lat.toFixed(2);
-        document.querySelector('.spanLon1000').innerHTML = lon.toFixed(2);
-        document.querySelector('.cornerTemp1000').innerHTML = Math.round(tempC) + "C";
-        document.querySelector('.cornerTempF1000').innerHTML = Math.round(tempF) + "F";
-        this.fetchCityName().then((cityName , i) => {
-          let city = "MISSING NAME"
-          let countryName = '';
-          if (typeof cityName.results[0] !== 'undefined' && typeof cityName.results[0].address_components[3] !== 'undefined') {
-             city = cityName.results[0].address_components[1].short_name;
-             countryName = cityName.results[0].address_components[3].short_name;
-          }
-            document.querySelector(".cityCorner1000").innerHTML = `${city}`;
-            const placeNameLi =   { index: this.state.index,  worldPlace: city  , countryShortName: countryName  , tempC: tempC , tempF: tempF, day:this.state.day, curentHour: this.state.curentHourWorld ,  minsWorld: this.state.curentMin , imageLatRoundLet: this.state.imageLatRound, imageLonRoundLet: this.state.imageLonRound , icon: icon }
-            this.props.pushToList({li:placeNameLi });
-            this.setState((prevState) => ({
-              index: prevState.index + 1
-            }));
-          })
-      })
-    }
-
-    getAllData = (e) => {
-      if(!e.ctrlKey) {
-        this.getLatLon(e);
-        this.getLatLonZoom(e);
+        const {imageLatLet, imageLonLet} = this.getLatLon(e);
         this.getTimeWorld(e);
-        this.pushObjectList(e);
-      }
+        this.fetchTempWorld(e).then(data => {
+            let tempC = data.main.temp;
+            let tempF = (tempC * 1.8) + 32;
+            let icon = data.weather[0].icon;
+            document.querySelector('.movingDivmax1000').style.display = "block";
+            document.querySelector('.spanLat1000').innerHTML = imageLatLet.toFixed(2);
+            document.querySelector('.spanLon1000').innerHTML = imageLonLet.toFixed(2);
+            document.querySelector('.cornerTemp1000').innerHTML = Math.round(tempC) + "C";
+            document.querySelector('.cornerTempF1000').innerHTML = Math.round(tempF) + "F";
+            fetch(` https://maps.googleapis.com/maps/api/geocode/json?latlng=${imageLatLet},${imageLonLet}&key=AIzaSyAhbhZNE6A-Zcg49SMCyO7r_lH4MCDylRc`)
+                .then(response => response.json())
+                .then(cityName => {
+                    console.log(cityName.results[0].address_components[1].short_name)
+                    let city = "MISSING NAME";
+                    let countryName = '';
+                    if (typeof cityName.results[0] !== 'undefined' && typeof cityName.results[0].address_components[3] !== 'undefined') {
+                        city = cityName.results[0].address_components[1].short_name;
+                        countryName = cityName.results[0].address_components[3].short_name;
+                    }
+                    document.querySelector(".cityCorner1000").innerHTML = `${city}`;
+                    const placeNameLi = {
+                        key: this.state.index,
+                        index: this.state.index,
+                        worldPlace: city,
+                        countryShortName: countryName,
+                        tempC: tempC,
+                        tempF: tempF,
+                        day: this.state.day,
+                        curentHour: this.state.curentHourWorld,
+                        minsWorld: this.state.curentMin,
+                        imageLatRoundLet: this.state.imageLatRound,
+                        imageLonRoundLet: this.state.imageLonRound,
+                        icon: icon
+                    }
+                    this.props.pushToList({li: placeNameLi});
+                    this.setState((prevState) => ({
+                        index: prevState.index + 1
+                    }));
+                })
+        })
     }
 
-    addEventListener() {
-      document.querySelectorAll('.img').forEach(option => option.addEventListener('click', this.zoom));
-    }
 
     onDelete = () => {
-      console.log("Delete Action")
-    this.props.deleteListItem();
-}
+      this.props.deleteListItem();
+    }
 
-onDeleteAll = (e) => {
-    this.props.deleteAll();
-    this.pushObjectList(e);
-}
+   onDeleteAll = () => {
+      this.props.deleteAll();
+    }
 
     render() {
       return (
         <div>
         <div className="body-container">
-            <div className="world-map" onClick={this.getAllData} onMouseMove={this.displayLonLat} onMouseOver={this.displayOn} onMouseOut={this.displayOff}>
+            <div className="world-map" onClick={this.pushObjectList} onMouseMove={this.displayLonLat} onMouseOver={this.displayOn} onMouseOut={this.displayOff}>
                 <div className="img img1" id="0" data-minlon="" data-maxlat=""></div>
                 <div className="img img1" id="1" data-minlon="" data-maxlat=""></div>
                 <div className="img img2" id="2" data-minlon="" data-maxlat=""></div>
@@ -409,49 +381,10 @@ onDeleteAll = (e) => {
                 <div className="img img99" id="99" data-minlon="" data-maxlat=""></div>
                 <div className="zoomed" onClick={this.zoomout} onMouseMove={this.displayZoomed}></div>
             </div>
-        <div className="wrapper">
-        <h2>RECENT PLACES</h2>
-        <p></p>
-        <div>
-        <ul className="list">
-            <List city={this.props.state.savedcities} />
-        </ul>
-          <button onClick={this.onDelete}>Delete</button>
-          <button onClick={this.onDeleteAll}>Delete All</button>
-        </div>
-        </div>
 
-        <div className="movingDiv">
-            <div className="movingLat">
-              <span className="LonLat">Lat:</span><span className="LonLat spanLat"></span>
-            </div>
-            <div className="movingLong">
-                <span className="LonLat">Lon:</span><span className="LonLat spanLon"></span>
-            </div>
-        </div>
-
-        <div className="movingDivmax1000">
-              <div>
-                 <span className="LonLat cityCorner1000"></span>
-              </div>
-              <div className="movingLat1000">
-                 <span className="LonLat">Lat:</span>
-                 <span className="LonLat spanLat1000"></span>
-              </div>
-              <div className="movingLong1000">
-                 <span className="LonLat">Lon:</span>
-                 <span className="LonLat spanLon1000"></span>
-               </div>
-               <div>
-                  <span className="LonLat cornerTemp1000"></span><span className="LonLat cornerTempF1000"></span>
-               </div>
-               <div>
-                 <span className="LonLat cornerDay1000"></span>
-               </div>
-               <div>
-                   <span className="hoursWorld"></span>:<span className="minutesWorld"/>
-               </div>
-          </div>
+            <List city={this.props.state.savedcities} onDeleteAll={this.onDeleteAll}/>
+            <MovingDiv />
+            <CornerInfo />
          </div>
         </div>
       )

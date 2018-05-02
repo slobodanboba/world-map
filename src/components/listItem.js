@@ -2,7 +2,6 @@ import React from 'react';
 
 class ListItem extends React.Component {
     render() {
-        console.log(this.props.city);
         let city = this.props.city;
         return (
             <div>

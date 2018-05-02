@@ -11,8 +11,14 @@ class List extends React.Component {
                 )
             );
         return  (
-            <div>
-                {listItems}
+                <div className="wrapper">
+                    <h2>RECENT PLACES</h2>
+                    <p></p>
+                <ul className="list">
+                    {listItems}
+                </ul>
+                <button onClick={this.onDelete}>Delete</button>
+                <button onClick={this.props.onDeleteAll}>Delete All</button>
             </div>
         );
     }
