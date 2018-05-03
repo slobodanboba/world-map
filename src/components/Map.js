@@ -9,7 +9,6 @@ import MapItems from "./MapItems";
 import '../stylesheets/style.css';
 import { getWidthHeight } from "./utilities";
 
-
 class Map extends React.Component {
 
     componentDidMount() {
@@ -159,51 +158,53 @@ class Map extends React.Component {
             })
     }
 
-    pushObjectList = (e) => {
-        this.zoom(e);
-        if(!e.ctrlKey && !e.shiftKey) {
-            const {imageLat, imageLon} = this.getLatLon(e);
-            this.getTimeWorld(e);
-            this.fetchTempWorld(e).then(data => {
-                let tempC = data.main.temp;
-                let tempF = (tempC * 1.8) + 32;
-                let icon = data.weather[0].icon;
-                let indexProp = this.props.state.index;
-                const nowWorld = new Date();
-                let curentMin = nowWorld.getMinutes() < 10 ? "0" + nowWorld.getMinutes() : nowWorld.getMinutes();
-                document.querySelector('.movingDivmax1000').style.display = "block";
-                document.querySelector('.spanLat1000').innerHTML = imageLat.toFixed(2);
-                document.querySelector('.spanLon1000').innerHTML = imageLon.toFixed(2);
-                document.querySelector('.cornerTemp1000').innerHTML = Math.round(tempC) + "C";
-                document.querySelector('.cornerTempF1000').innerHTML = Math.round(tempF) + "F";
-                fetch(` https://maps.googleapis.com/maps/api/geocode/json?latlng=${imageLat},${imageLon}&key=AIzaSyAhbhZNE6A-Zcg49SMCyO7r_lH4MCDylRc`)
-                    .then(response => response.json())
-                    .then(cityName => {
-                        let city = "MISSING NAME";
-                        let countryName = '';
-                        if (typeof cityName.results[0] !== 'undefined' && typeof cityName.results[0].address_components[3] !== 'undefined') {
-                            city = cityName.results[0].address_components[1].short_name;
-                            countryName = cityName.results[0].address_components[3].short_name;
-                        }
-                        document.querySelector(".cityCorner1000").innerHTML = `${city}`;
-                        const placeNameLi = {
-                            index: indexProp,
-                            worldPlace: city,
-                            countryShortName: countryName,
-                            tempC: tempC,
-                            tempF: tempF,
-                            day: this.props.state.day,
-                            curentHour: this.props.state.curentHour,
-                            minsWorld: curentMin,
-                            imageLatRoundLet: imageLat,
-                            imageLonRoundLet: imageLon,
-                            icon: icon
-                        }
-                        this.props.pushToList({li: placeNameLi});
-                        this.props.indexPlus();
-                    })
+  pushObjectList = (e) => {
+    this.zoom(e);
+    if(!e.ctrlKey && !e.shiftKey) {
+        const {imageLat, imageLon} = this.getLatLon(e);
+        let imageLatRound = imageLat.toFixed(2);
+        let imageLonRound = imageLon.toFixed(2);
+        this.getTimeWorld(e);
+        this.fetchTempWorld(e).then(data => {
+        let tempC = data.main.temp;
+        let tempF = (tempC * 1.8) + 32;
+        let icon = data.weather[0].icon;
+        let indexProp = this.props.state.index;
+        const nowWorld = new Date();
+        let curentMin = nowWorld.getMinutes() < 10 ? "0" + nowWorld.getMinutes() : nowWorld.getMinutes();
+        document.querySelector('.movingDivmax1000').style.display = "block";
+        document.querySelector('.spanLat1000').innerHTML = imageLat.toFixed(2);
+        document.querySelector('.spanLon1000').innerHTML = imageLon.toFixed(2);
+        document.querySelector('.cornerTemp1000').innerHTML = Math.round(tempC) + "C";
+        document.querySelector('.cornerTempF1000').innerHTML = Math.round(tempF) + "F";
+        fetch(` https://maps.googleapis.com/maps/api/geocode/json?latlng=${imageLat},${imageLon}&key=AIzaSyAhbhZNE6A-Zcg49SMCyO7r_lH4MCDylRc`)
+            .then(response => response.json())
+            .then(cityName => {
+                let city = "MISSING NAME";
+                let countryName = '';
+                if (typeof cityName.results[0] !== 'undefined' && typeof cityName.results[0].address_components[3] !== 'undefined') {
+                    city = cityName.results[0].address_components[1].short_name;
+                    countryName = cityName.results[0].address_components[3].short_name;
+                }
+                document.querySelector(".cityCorner1000").innerHTML = `${city}`;
+                const placeNameLi = {
+                    index: indexProp,
+                    worldPlace: city,
+                    countryShortName: countryName,
+                    tempC: tempC,
+                    tempF: tempF,
+                    day: this.props.state.day,
+                    curentHour: this.props.state.curentHour,
+                    minsWorld: curentMin,
+                    imageLatRoundLet: imageLatRound,
+                    imageLonRoundLet: imageLonRound,
+                    icon: icon
+                }
+                this.props.pushToList({li: placeNameLi});
+                this.props.indexPlus();
             })
-        }
+    })
+    }
     }
 
     render() {

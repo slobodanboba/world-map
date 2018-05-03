@@ -1,5 +1,4 @@
 import React from 'react';
-import '../stylesheets/style.css';
 
 const CornerInfo = () => {
      return (
@@ -27,6 +26,5 @@ const CornerInfo = () => {
           </div>
         )
  }
-
 
 export default CornerInfo;

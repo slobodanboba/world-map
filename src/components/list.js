@@ -3,25 +3,20 @@ import ListItem from "./listItem"
 import {connect} from "react-redux";
 import {deleteAll, deleteListItem } from "../actions/actions";
 
-class List extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
-    onDelete = () => {
+const List = (props) => {
+   const onDelete = () => {
         let ckecked = document.querySelectorAll('#checkBox');
         let checkedArray = [...ckecked];
         let indexes = checkedArray.map((e, i) => !e.checked ? i : '').filter(String)
-        this.props.deleteListItem({indexes: indexes});
+        props.deleteListItem({indexes: indexes});
         checkedArray.map(e => e.checked = false)
     }
 
-    onDeleteAll = () => {
-        this.props.deleteAll();
+    const onDeleteAll = () => {
+        props.deleteAll();
     }
 
-    render() {
-        let list = this.props.city;
+        let list = props.city;
         let listItems = list.sort((a, b) => b.index - a.index).map((city,i) =>
                 (
                     <li key={i}><ListItem className="liItem" city={city} /></li>
@@ -34,11 +29,10 @@ class List extends React.Component {
                 <ul className="list">
                     {listItems}
                 </ul>
-                <button onClick={this.onDelete}>Delete</button>
-                <button onClick={this.onDeleteAll}>Delete All</button>
+                <button onClick={onDelete}>Delete</button>
+                <button onClick={onDeleteAll}>Delete All</button>
             </div>
         );
-    }
 }
 
 const mapStatetoProps = (state) => ({

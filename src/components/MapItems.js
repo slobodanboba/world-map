@@ -1,7 +1,4 @@
 import React from 'react';
-import {connect} from "react-redux";
-import {deleteAll, deleteListItem } from "../actions/actions";
-
 
 const MapItems = (props) => {
 
@@ -121,14 +118,6 @@ const MapItems = (props) => {
         )
     }
 
-const mapStatetoProps = (state) => ({
-    state: state.map
-})
 
-const mapDispatchToProps = (dispatch) => ({
-    deleteListItem: () => dispatch(deleteListItem()),
-    deleteAll: () => dispatch(deleteAll()),
-});
-
-export default connect(mapStatetoProps, mapDispatchToProps)(MapItems);
+export default MapItems;
 
