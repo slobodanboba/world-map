@@ -15,4 +15,29 @@ export const pushToList = ({li} = {}) => ({
 export const indexPlus = () => ({
     type: 'INDEX_PLUS'
 });
+export const zoomboolFalse = () => ({
+    type: 'ZOOMBOOL_FALSE'
+});
+export const zoomboolTrue = () => ({
+    type: 'ZOOMBOOL_TRUE'
+});
+export const maxLat = ({max} = {}) => ({
+    type: 'MAX_LAT',
+    maxlat:max
+});
+export const minLon = ({min} = {}) => ({
+    type: 'MIN_LON',
+    minlon:min
+});
+
+export const curentHour = ({hour} = {}) => ({
+    type: 'CURENT_HOUR',
+    hour:hour
+});
+
+export const dayWorld = ({day} = {}) => ({
+    type: 'CURENT_DAY',
+    day: day
+});
+
 

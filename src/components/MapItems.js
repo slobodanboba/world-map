@@ -3,27 +3,19 @@ import {connect} from "react-redux";
 import {deleteAll, deleteListItem } from "../actions/actions";
 
 
-class MapItems extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = this.props.state;
-    }
+const MapItems = (props) => {
 
-    displayOn = () => {
+   const  displayOn = () => {
         if (!window.matchMedia("(max-width: 1000px)").matches) {
             document.querySelector('.movingDiv').style.display = "block";
         }
     }
-    displayOff = () => {
+   const displayOff = () => {
         document.querySelector('.movingDiv').style.display = "none";
     }
 
-
-
-    render() {
-
         return (
-            <div className="world-map" onClick={this.props.pushObjectList} onMouseMove={this.props.displayLonLat} onMouseOver={this.displayOn} onMouseOut={this.displayOff}>
+            <div className="world-map" onClick={props.pushObjectList} onMouseMove={props.displayLonLat} onMouseOver={displayOn} onMouseOut={displayOff}>
                 <div className="img img1" id="0" data-minlon="" data-maxlat=""></div>
                 <div className="img img1" id="1" data-minlon="" data-maxlat=""></div>
                 <div className="img img2" id="2" data-minlon="" data-maxlat=""></div>
@@ -124,12 +116,10 @@ class MapItems extends React.Component {
                 <div className="img img97" id="97" data-minlon="" data-maxlat=""></div>
                 <div className="img img98" id="98" data-minlon="" data-maxlat=""></div>
                 <div className="img img99" id="99" data-minlon="" data-maxlat=""></div>
-                <div className="zoomed" onClick={this.props.zoomout} onMouseMove={this.props.displayZoomed}></div>
+                <div className="zoomed" onClick={props.zoomout} onMouseMove={props.displayLonLat}></div>
             </div>
-
         )
     }
-}
 
 const mapStatetoProps = (state) => ({
     state: state.map

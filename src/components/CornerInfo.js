@@ -1,11 +1,8 @@
 import React from 'react';
 import '../stylesheets/style.css';
 
-
-class CornerInfo extends React.Component {
-  render() {
-
-      return (
+const CornerInfo = () => {
+     return (
           <div className="movingDivmax1000">
               <div>
                   <span className="LonLat cityCorner1000"></span>
@@ -29,7 +26,6 @@ class CornerInfo extends React.Component {
               </div>
           </div>
         )
-    }
  }
 
 

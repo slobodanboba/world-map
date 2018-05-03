@@ -21,10 +21,6 @@ const defaultState = {
     offsetHoursWorld: 0,
     guadalajaraHours: 0,
     curentHourWorld: 0,
-    imageLat: 0,
-    imageLon: 0,
-    imageLatRound: 0,
-    imageLonRound: 0,
     index: 0,
     imageOffsetTop: 0,
     imageOffsetLeft: 0,
@@ -32,6 +28,11 @@ const defaultState = {
 
 export default (state = defaultState, action) => {
     switch (action.type) {
+        case 'INDEX_PLUS':
+            return {
+                ...state,
+                index: state.index + 1
+            };
         case 'DELETE_ALL':
             return {
                 ...state,
@@ -39,7 +40,7 @@ export default (state = defaultState, action) => {
             };
         case 'DELETE_LIST_ITEM':
             let newArray = [];
-            action.indexes.map(city => newArray.push(state.savedcities[city]))
+            action.indexes.map(city => newArray.push(state.savedcities[city]));
            return {
            ...state,
                savedcities : newArray
@@ -49,11 +50,40 @@ export default (state = defaultState, action) => {
                 ...state,
                 savedcities:  [...state.savedcities, action.li ]
             };
-        case 'INDEX_PLUS':
+        case 'ZOOMBOOL_FALSE':
             return {
                 ...state,
-                index: state.index + 1
-            }
+                zoombool: false
+            };
+        case 'ZOOMBOOL_TRUE':
+            return {
+                ...state,
+                zoombool: true
+            };
+        case 'MAX_LAT':
+            console.log(action.maxlat)
+            return {
+                ...state,
+                maxlat: action.maxlat
+            };
+        case 'MIN_LON':
+            console.log(action.minlon)
+            return {
+                ...state,
+                minlon: action.minlon
+            };
+        case 'CURENT_HOUR':
+            console.log(action.hour)
+            return {
+                ...state,
+                curentHour: action.hour
+            };
+        case 'CURENT_DAY':
+            console.log(action.day)
+            return {
+                ...state,
+                day: action.day
+            };
         default:
             return state;
     }

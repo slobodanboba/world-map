@@ -6,7 +6,6 @@ import {deleteAll, deleteListItem } from "../actions/actions";
 class List extends React.Component {
     constructor(props) {
         super(props);
-        this.state = this.props.state;
     }
 
     onDelete = () => {
@@ -14,6 +13,7 @@ class List extends React.Component {
         let checkedArray = [...ckecked];
         let indexes = checkedArray.map((e, i) => !e.checked ? i : '').filter(String)
         this.props.deleteListItem({indexes: indexes});
+        checkedArray.map(e => e.checked = false)
     }
 
     onDeleteAll = () => {
@@ -24,7 +24,7 @@ class List extends React.Component {
         let list = this.props.city;
         let listItems = list.sort((a, b) => b.index - a.index).map((city,i) =>
                 (
-                    <li key={city.index}><ListItem className="liItem" city={city} /></li>
+                    <li key={i}><ListItem className="liItem" city={city} /></li>
                 )
             );
         return  (
