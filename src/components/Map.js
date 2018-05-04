@@ -46,8 +46,9 @@ class Map extends React.Component {
 
   displayLonLat = (e) => {
       const { imageLat, imageLon } = this.getLatLon(e);
-      document.documentElement.style.setProperty("--pageX", e.pageX + this.props.state.suffix);
-      document.documentElement.style.setProperty(`--pageY`, e.pageY + this.props.state.suffix);
+      let suffix = 'px';
+      document.documentElement.style.setProperty("--pageX", e.pageX + suffix);
+      document.documentElement.style.setProperty(`--pageY`, e.pageY + suffix);
         let imageLatRoundLet = imageLat.toFixed(2);
         let imageLonRoundLet = imageLon.toFixed(2);
       document.querySelector('.spanLat').innerHTML = imageLatRoundLet;

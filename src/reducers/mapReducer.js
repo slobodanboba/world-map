@@ -68,6 +68,12 @@ export default (state = defaultState, action) => {
                 ...state,
                 day: action.day
             };
+        case 'CHECK_TOGGLE':
+            console.log(action.checkedBoxes)
+            // return {
+            //     ...state,
+            //     savedcities: action.checkedBoxes
+            // };
         default:
             return state;
     }

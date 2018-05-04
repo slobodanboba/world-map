@@ -16,10 +16,12 @@ const List = (props) => {
         props.deleteAll();
     }
 
+
+
         let list = props.city;
         let listItems = list.sort((a, b) => b.index - a.index).map((city,i) =>
                 (
-                    <li key={i}><ListItem className="liItem" city={city} /></li>
+                    <li key={i} ><ListItem className="liItem" city={city} /></li>
                 )
             );
         return  (
