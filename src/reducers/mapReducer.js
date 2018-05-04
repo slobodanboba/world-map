@@ -1,14 +1,9 @@
 
 const defaultState = {
-    suffix: "px",
     savedcities: [],
-    offsetWorld: 0,
-    wheatherIconWorld: '',
     zoombool: false,
     maxlat: 0,
     minlon: 0,
-    maxColumn: 0,
-    maxRow: 0,
     day: '',
     curentHour: 0,
     curentMin: 0,
