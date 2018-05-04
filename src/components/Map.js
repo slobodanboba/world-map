@@ -75,7 +75,6 @@ class Map extends React.Component {
         }
     }
 
-
     fetchTempWorld(e) {
         const { imageLat, imageLon } = this.getLatLon(e);
       async function fetchTempC(e) {

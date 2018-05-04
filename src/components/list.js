@@ -21,7 +21,11 @@ const List = (props) => {
         let list = props.city;
         let listItems = list.sort((a, b) => b.index - a.index).map((city,i) =>
                 (
+<<<<<<< HEAD
                     <li key={i} ><ListItem className="liItem" city={city} /></li>
+=======
+                    <li key={i} className="listItem"><ListItem className="liItem" city={city} /></li>
+>>>>>>> 485c9a3e345ffe4dc7377d5342527801e7326e02
                 )
             );
         return  (
