@@ -9,7 +9,7 @@
     position: absolute;
     top: 15px;
     left: 0;
-    background: linear-gradient(to right, #222 0%, #45484d 100%);
+    background: radial-gradient(circle, #B1463C 0%, #F29F4E 100%);
     border-radius: 4px;
     box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.5), 0px 1px 0px rgba(255, 255, 255, 0.4); }
     .squaredThree label:after {
@@ -82,14 +82,14 @@ h2 {
   margin-bottom: 0px; }
 
 button {
-  background: linear-gradient(to bottom, #222 0%, #45484d 100%);
+  background: radial-gradient(circle, #B1463C 0%, #F29F4E 100%);
   border: none;
   border-bottom: 3px solid rgba(0, 0, 0, 0.2);
   margin-left: 10px;
   border-radius: 7px;
   position: relative;
-  bottom: 20px;
-  font-weight: 400;
+  bottom: 2px;
+  font-weight: 600;
   width: 13rem;
   height: 3rem;
   transition: all .1s ease-in;
@@ -155,6 +155,110 @@ button:hover {
   text-align: right;
   color: rgba(0, 0, 0, 0.3); }
 
+.Header {
+  grid-column: 1/-1;
+  grid-row: 1/2;
+  background: #1f1f1f; }
+
+:root {
+  --pageX: 0;
+  --pageY: 0;
+  --height: 400px; }
+
+::-webkit-scrollbar {
+  width: 7px; }
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1); }
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3); }
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5); }
+
+.city {
+  text-shadow: 1px 1px rgba(255, 255, 255, 0.2);
+  font-size: 30px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  z-index: auto; }
+
+select {
+  padding: 0px;
+  margin: 0px;
+  position: relative;
+  font-size: 30px;
+  text-shadow: 1px 1px rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0);
+  border: none;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  font-family: 'helvetica neue';
+  text-align: center; }
+
+option {
+  bottom: 7px;
+  right: 22%;
+  padding: 0px;
+  margin: 0px;
+  position: relative;
+  font-size: 30px;
+  background-color: black;
+  border: none;
+  color: black;
+  text-align: center; }
+
+span {
+  font-size: 30px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 1px 1px rgba(255, 255, 255, 0); }
+
+input {
+  position: relative;
+  background: rgba(255, 255, 255, 0);
+  text-transform: capitalize;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 1px 1px rgba(255, 255, 255, 0.1);
+  height: 25px;
+  width: 150px;
+  font-size: 1em;
+  text-align: center;
+  font-weight: 800;
+  border-radius: 5px;
+  font-family: 'helvetica neue'; }
+
+.temp-london {
+  position: relative;
+  top: 50px; }
+
+.temp-tokyo {
+  position: relative;
+  top: 50px; }
+
+.temp-sydney {
+  position: relative;
+  top: 50px; }
+
+.temp-info {
+  position: relative;
+  left: 5%; }
+
+.tempAllWorld {
+  position: relative;
+  top: 30px;
+  font-size: 20px;
+  font-weight: 600; }
+
+.selectedSelect option {
+  max-width: 100px; }
+
+.selectedSelect {
+  max-width: 200px;
+  position: relative;
+  margin-left: -5%; }
+
 * {
   box-sizing: border-box; }
 
@@ -206,7 +310,7 @@ html {
   font-weight: 400;
   text-align: center;
   font-size: 9px;
-  background: #2C3E50;
+  background: #1D1F21;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   background-size: cover;
@@ -348,49 +452,6 @@ h2 {
 
 .cornerTempF1000 {
   padding-left: 5px; }
-
-/*Recent List----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-.wrapper {
-  -ms-grid-column: 2;
-  -ms-grid-column-span: 1;
-  grid-column: 2/3;
-  grid-row: 2/3;
-  padding: 10px 10px 10px 10px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 5px solid rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  max-height: var(--height);
-  margin: 5px; }
-
-.list {
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 0px 5% 0px 5%;
-  height: var(--listHeight);
-  max-height: var(--listHeight);
-  line-height: 30px; }
-
-ul li div:hover {
-  background: rgba(0, 0, 0, 0.2); }
-
-.textAlighnRight {
-  float: right;
-  font-size: 1.2;
-  padding-top: 10px; }
-
-h2 {
-  text-align: center;
-  font-weight: 200;
-  padding-bottom: 0px;
-  margin-bottom: 0px; }
 
 .hoursWorld {
   font-size: 1.3em; }

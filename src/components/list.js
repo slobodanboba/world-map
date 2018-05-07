@@ -2,6 +2,7 @@ import React from 'react';
 import ListItem from "./listItem"
 import {connect} from "react-redux";
 import {deleteAll, deleteListItem } from "../actions/actions";
+import Search from "./inputSearch";
 
 const List = (props) => {
    const onDelete = () => {
@@ -24,6 +25,7 @@ const List = (props) => {
             );
         return  (
                 <div className="wrapper">
+                  <Search />
                     <h2>RECENT PLACES</h2>
                     <p></p>
                 <ul className="list">
@@ -45,4 +47,3 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default connect(mapStatetoProps, mapDispatchToProps)(List);
-

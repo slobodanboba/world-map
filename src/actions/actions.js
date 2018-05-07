@@ -40,5 +40,9 @@ export const dayWorld = ({day} = {}) => ({
     day: day
 });
 
+export const pushCitiesList = ({city} = {}) => ({
+    type: 'CITY_LIST',
+    city: city
+});
 
 

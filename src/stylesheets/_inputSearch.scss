@@ -1,0 +1,111 @@
+:root {
+  --pageX: 0;
+  --pageY: 0;
+  --height: 400px;
+}
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.1);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.3);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.5);
+}
+
+.city {
+  text-shadow: 1px 1px rgba(255,255,255,0.2);
+  font-size: 30px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  z-index: auto;
+}
+
+select {
+  padding: 0px;
+  margin: 0px;
+  position: relative;
+  font-size: 30px;
+  text-shadow: 1px 1px rgba(255,255,255,0.4);
+  background: rgba(255, 255, 255, 0.0);
+  border: none;
+  color: rgba(255,255,255,0.9);
+  font-weight: 600;
+  font-family:'helvetica neue';
+  text-align: center;
+}
+
+option {
+  bottom: 7px;
+  right: 22%;
+  padding: 0px;
+  margin: 0px;
+  position: relative;
+  font-size: 30px;
+  background-color: black;
+  border: none;
+  color: black;
+  text-align: center;
+}
+
+span {
+  font-size: 30px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  text-shadow: 1px 1px rgba(255,255,255,0.0);
+}
+
+input {
+  position: relative;
+  background: rgba(255, 255, 255, 0.0);
+  text-transform: capitalize;
+  color: rgba(255,255,255,0.85);
+  text-shadow: 1px 1px rgba(255,255,255,0.1);
+  height: 25px;
+  width: 150px;
+  font-size: 1em;
+  text-align: center;
+  font-weight: 800;
+  border-radius: 5px;
+  font-family:'helvetica neue';
+}
+
+.temp-london {
+  position: relative;
+  top: 50px;
+}
+.temp-tokyo {
+  position: relative;
+  top: 50px;
+}
+.temp-sydney {
+  position: relative;
+  top: 50px;
+}
+.temp-info {
+  position: relative;
+  left: 5%;
+}
+.tempAllWorld {
+  position: relative;
+  top: 30px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.selectedSelect option {
+  max-width: 100px;
+}
+.selectedSelect {
+  max-width: 200px;
+  position: relative;
+  margin-left: -5%;
+}
+
+@media only screen and (max-width: 1000px) {
+
+
+}

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import 'raw-loader';
 import { pushToList , indexPlus , zoomboolFalse , zoomboolTrue, maxLat ,minLon , curentHour, dayWorld } from "../actions/actions";
 import List from "./list";
+import Header from "./Header"
 import MovingDiv from "./MovingDiv";
 import CornerInfo from "./CornerInfo";
 import MapItems from "./MapItems";
@@ -13,16 +14,7 @@ class Map extends React.Component {
 
     componentDidMount() {
         document.querySelectorAll('.img').forEach(option => option.addEventListener('click', this.zoom));
-        let image = document.querySelector(".world-map");
-        let theCSSpropWidth = window.getComputedStyle(image,null).getPropertyValue("width");
-        let imageWidth = parseInt(theCSSpropWidth);
-        let varHeight = imageWidth/2;
-        let suffix = 'px';
-        document.documentElement.style.setProperty("--height", varHeight + suffix);
-        let theCSSpropHeight = window.getComputedStyle(image,null).getPropertyValue("height");
-        let imageHeight = parseInt(theCSSpropHeight);
-        let listHeight = imageHeight - 100;
-        document.documentElement.style.setProperty("--listHeight", listHeight + suffix);
+        getWidthHeight();
     }
 
   getLatLon = (e) => {
@@ -211,6 +203,7 @@ class Map extends React.Component {
       return (
         <div>
         <div className="body-container">
+            <Header />
             <MapItems
                 pushObjectList={this.pushObjectList}
                 displayLonLat={this.displayLonLat}
