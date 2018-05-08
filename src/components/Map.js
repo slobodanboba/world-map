@@ -8,7 +8,7 @@ import MovingDiv from "./MovingDiv";
 import CornerInfo from "./CornerInfo";
 import MapItems from "./MapItems";
 import '../stylesheets/style.css';
-import { getWidthHeight } from "./utilities";
+import {getWidthHeight, fetchTempWorld, fetchOffset, innerHtmlCorner} from "./utilities";
 
 class Map extends React.Component {
 
@@ -20,10 +20,8 @@ class Map extends React.Component {
   getLatLon = (e) => {
       let imageLat;
       let imageLon;
-      let imageOffsetTop = document.querySelector(".world-map").offsetTop;
-      let imageOffsetLeft = document.querySelector(".world-map").offsetLeft;
-      let positionY = e.pageY - imageOffsetTop;
-      let positionX = e.pageX - imageOffsetLeft;
+      let positionY = e.pageY - document.querySelector(".world-map").offsetTop;
+      let positionX = e.pageX - document.querySelector(".world-map").offsetLeft;
       const { heightDevider, widthDevider } = getWidthHeight(e);
       if (this.props.state.zoombool) {
           imageLat = (this.props.state.maxlat) - ((positionY / heightDevider) * 0.18);
@@ -67,28 +65,12 @@ class Map extends React.Component {
         }
     }
 
-    fetchTempWorld(imageLat, imageLon) {
-      async function fetchTempC() {
-        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${imageLat}&lon=${imageLon}&units=metric&APPID=261e313010ab3d43b1344ab9eba64cfa`, {});
-        return response.json();
-      }
-      return fetchTempC()
-    }
-
-    fetchOffset(imageLat, imageLon) {
-        async function fetchTempC() {
-            const response = await fetch(`https://maps.googleapis.com/maps/api/timezone/json?location=${imageLat},${imageLon}&timestamp=1331161200&key=AIzaSyANpHwd0ZvP_2qrvqEEp-5l6NS3LkwxSbY`, {});
-            return response.json();
-        }
-        return fetchTempC()
-    }
-
-    getTimeWorld(imageLat, imageLon) {
-            let day;
-            let curentMin;
-            let offsetWorld = 0;
-            this.fetchOffset(imageLat, imageLon).then(world => {
-                offsetWorld = world.rawOffset
+    getTimeWorld = (imageLat, imageLon) => {
+        let day;
+        let curentMin;
+        let offsetWorld = 0;
+        fetchOffset(imageLat, imageLon).then(world => {
+            offsetWorld = world.rawOffset
             const timeWorld = new Date().getHours()
             const dayNow = new Date().getDay()
             const offsetHours = (offsetWorld/3600);
@@ -145,58 +127,53 @@ class Map extends React.Component {
             }
             document.querySelector(".hoursWorld").innerHTML = `${curentHourWorld}`;
             this.props.curentHour({hour: curentHourWorld})
-            })
+        })
     }
 
-  pushObjectList = (e) => {
-    this.zoom(e);
-    if(!e.ctrlKey && !e.shiftKey) {
-        const {imageLat, imageLon} = this.getLatLon(e);
-        let imageLatRound = imageLat.toFixed(2);
-        let imageLonRound = imageLon.toFixed(2);
+
+    procesInputClick = (imageLat, imageLon) => {
         this.getTimeWorld(imageLat, imageLon);
-        this.fetchTempWorld(imageLat, imageLon).then(data => {
-        let tempC = data.main.temp;
-        let tempF = (tempC * 1.8) + 32;
-        let icon = data.weather[0].icon;
-        let indexProp = this.props.state.index;
-        const nowWorld = new Date();
-        let curentMin = nowWorld.getMinutes() < 10 ? "0" + nowWorld.getMinutes() : nowWorld.getMinutes();
-        document.querySelector('.movingDivmax1000').style.display = "block";
-        document.querySelector('.spanLat1000').innerHTML = imageLat.toFixed(2);
-        document.querySelector('.spanLon1000').innerHTML = imageLon.toFixed(2);
-        document.querySelector('.cornerTemp1000').innerHTML = Math.round(tempC) + "C";
-        document.querySelector('.cornerTempF1000').innerHTML = Math.round(tempF) + "F";
-        fetch(` https://maps.googleapis.com/maps/api/geocode/json?latlng=${imageLat},${imageLon}&key=AIzaSyAhbhZNE6A-Zcg49SMCyO7r_lH4MCDylRc`)
-            .then(response => response.json())
-            .then(cityName => {
-                let city = "MISSING NAME";
-                let countryName = '';
-                if (typeof cityName.results[0] !== 'undefined' && typeof cityName.results[0].address_components[3] !== 'undefined') {
-                    city = cityName.results[0].address_components[1].short_name;
-                    countryName = cityName.results[0].address_components[3].short_name;
-                }
-                document.querySelector(".cityCorner1000").innerHTML = `${city}`;
-                const placeNameLi = {
-                    index: indexProp,
-                    worldPlace: city,
-                    countryShortName: countryName,
-                    tempC: tempC,
-                    tempF: tempF,
-                    day: this.props.state.day,
-                    curentHour: this.props.state.curentHour,
-                    minsWorld: curentMin,
-                    imageLatRoundLet: imageLatRound,
-                    imageLonRoundLet: imageLonRound,
-                    icon: icon
-                }
-                this.props.pushToList({li: placeNameLi});
-                this.props.indexPlus();
-            })
-    })
-    }
+        fetchTempWorld(imageLat, imageLon).then(data => {
+            let tempC = data.main.temp;
+            let tempF = (tempC * 1.8) + 32;
+            let curentMin = new Date().getMinutes() < 10 ? "0" + new Date().getMinutes() : new Date().getMinutes();
+            innerHtmlCorner(imageLat, imageLon, tempC, tempF);
+            fetch(` https://maps.googleapis.com/maps/api/geocode/json?latlng=${imageLat},${imageLon}&key=AIzaSyAhbhZNE6A-Zcg49SMCyO7r_lH4MCDylRc`)
+                .then(response => response.json())
+                .then(cityName => {
+                    let city = "MISSING NAME";
+                    let countryName = '';
+                    if (typeof cityName.results[0] !== 'undefined' && typeof cityName.results[0].address_components[3] !== 'undefined') {
+                        city = cityName.results[0].address_components[1].short_name;
+                        countryName = cityName.results[0].address_components[3].short_name;
+                    }
+                    document.querySelector(".cityCorner1000").innerHTML = `${city}`;
+                    const placeNameLi = {
+                        index: this.props.state.index,
+                        worldPlace: city,
+                        countryShortName: countryName,
+                        tempC: tempC,
+                        tempF: tempF,
+                        day: this.props.state.day,
+                        curentHour: this.props.state.curentHour,
+                        minsWorld: curentMin,
+                        imageLatRoundLet: imageLat.toFixed(2),
+                        imageLonRoundLet: imageLon.toFixed(2),
+                        icon: data.weather[0].icon
+                    }
+                    this.props.pushToList({li: placeNameLi});
+                    this.props.indexPlus();
+                })
+        })
     }
 
+    pushObjectList = (e) => {
+        this.zoom(e);
+        if(!e.ctrlKey && !e.shiftKey) {
+            const {imageLat, imageLon} = this.getLatLon(e);
+            this.procesInputClick(imageLat, imageLon);
+        }
+    }
 
     searchInput = (e) => {
         this.zoom(e);
@@ -208,48 +185,7 @@ class Map extends React.Component {
             .then((inputCity) => {
             let imageLat = inputCity.results[0].geometry.location.lat;
             let imageLon = inputCity.results[0].geometry.location.lng;
-            let imageLatRound = imageLat.toFixed(2);
-            let imageLonRound = imageLon.toFixed(2);
-            this.getTimeWorld(imageLat, imageLon);
-            this.fetchTempWorld(imageLat, imageLon).then(data => {
-                let tempC = data.main.temp;
-                let tempF = (tempC * 1.8) + 32;
-                let icon = data.weather[0].icon;
-                let indexProp = this.props.state.index;
-                const nowWorld = new Date();
-                let curentMin = nowWorld.getMinutes() < 10 ? "0" + nowWorld.getMinutes() : nowWorld.getMinutes();
-                document.querySelector('.movingDivmax1000').style.display = "block";
-                document.querySelector('.spanLat1000').innerHTML = imageLat.toFixed(2);
-                document.querySelector('.spanLon1000').innerHTML = imageLon.toFixed(2);
-                document.querySelector('.cornerTemp1000').innerHTML = Math.round(tempC) + "C";
-                document.querySelector('.cornerTempF1000').innerHTML = Math.round(tempF) + "F";
-                fetch(` https://maps.googleapis.com/maps/api/geocode/json?latlng=${imageLat},${imageLon}&key=AIzaSyAhbhZNE6A-Zcg49SMCyO7r_lH4MCDylRc`)
-                    .then(response => response.json())
-                    .then(cityName => {
-                        let city = "MISSING NAME";
-                        let countryName = '';
-                        if (typeof cityName.results[0] !== 'undefined' && typeof cityName.results[0].address_components[3] !== 'undefined') {
-                            city = cityName.results[0].address_components[1].short_name;
-                            countryName = cityName.results[0].address_components[3].short_name;
-                        }
-                        document.querySelector(".cityCorner1000").innerHTML = `${city}`;
-                        const placeNameLi = {
-                            index: indexProp,
-                            worldPlace: city,
-                            countryShortName: countryName,
-                            tempC: tempC,
-                            tempF: tempF,
-                            day: this.props.state.day,
-                            curentHour: this.props.state.curentHour,
-                            minsWorld: curentMin,
-                            imageLatRoundLet: imageLatRound,
-                            imageLonRoundLet: imageLonRound,
-                            icon: icon
-                        }
-                        this.props.pushToList({li: placeNameLi});
-                        this.props.indexPlus();
-                    })
-            })
+            this.procesInputClick(imageLat, imageLon);
         })
     }
 
