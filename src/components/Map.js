@@ -67,29 +67,27 @@ class Map extends React.Component {
         }
     }
 
-    fetchTempWorld(e) {
-        const { imageLat, imageLon } = this.getLatLon(e);
-      async function fetchTempC(e) {
+    fetchTempWorld(imageLat, imageLon) {
+      async function fetchTempC() {
         const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${imageLat}&lon=${imageLon}&units=metric&APPID=261e313010ab3d43b1344ab9eba64cfa`, {});
-        return response.json(e);
+        return response.json();
       }
-      return fetchTempC(e)
+      return fetchTempC()
     }
 
-    fetchOffset(e) {
-        const { imageLat, imageLon } = this.getLatLon(e);
-        async function fetchTempC(e) {
+    fetchOffset(imageLat, imageLon) {
+        async function fetchTempC() {
             const response = await fetch(`https://maps.googleapis.com/maps/api/timezone/json?location=${imageLat},${imageLon}&timestamp=1331161200&key=AIzaSyANpHwd0ZvP_2qrvqEEp-5l6NS3LkwxSbY`, {});
-            return response.json(e);
+            return response.json();
         }
-        return fetchTempC(e)
+        return fetchTempC()
     }
 
-    getTimeWorld(e) {
+    getTimeWorld(imageLat, imageLon) {
             let day;
             let curentMin;
             let offsetWorld = 0;
-            this.fetchOffset(e).then(world => {
+            this.fetchOffset(imageLat, imageLon).then(world => {
                 offsetWorld = world.rawOffset
             const timeWorld = new Date().getHours()
             const dayNow = new Date().getDay()
@@ -119,7 +117,7 @@ class Map extends React.Component {
                     day = "Thusday"
                     break;
                 case 3:
-                    day = "wednsday";
+                    day = "Wednsday";
                     break;
                 case 4:
                     day = "Thursday"
@@ -156,8 +154,8 @@ class Map extends React.Component {
         const {imageLat, imageLon} = this.getLatLon(e);
         let imageLatRound = imageLat.toFixed(2);
         let imageLonRound = imageLon.toFixed(2);
-        this.getTimeWorld(e);
-        this.fetchTempWorld(e).then(data => {
+        this.getTimeWorld(imageLat, imageLon);
+        this.fetchTempWorld(imageLat, imageLon).then(data => {
         let tempC = data.main.temp;
         let tempF = (tempC * 1.8) + 32;
         let icon = data.weather[0].icon;
@@ -199,6 +197,62 @@ class Map extends React.Component {
     }
     }
 
+
+    searchInput = (e) => {
+        this.zoom(e);
+        e.preventDefault();
+        let inputValue = e.target[0].value;
+        console.log(e.target[0].value)
+        fetch(` https://maps.googleapis.com/maps/api/geocode/json?address=${inputValue}&key=AIzaSyAhbhZNE6A-Zcg49SMCyO7r_lH4MCDylRc `)
+            .then(response => response.json())
+            .then((inputCity) => {
+            let imageLat = inputCity.results[0].geometry.location.lat;
+            let imageLon = inputCity.results[0].geometry.location.lng;
+            let imageLatRound = imageLat.toFixed(2);
+            let imageLonRound = imageLon.toFixed(2);
+            this.getTimeWorld(imageLat, imageLon);
+            this.fetchTempWorld(imageLat, imageLon).then(data => {
+                let tempC = data.main.temp;
+                let tempF = (tempC * 1.8) + 32;
+                let icon = data.weather[0].icon;
+                let indexProp = this.props.state.index;
+                const nowWorld = new Date();
+                let curentMin = nowWorld.getMinutes() < 10 ? "0" + nowWorld.getMinutes() : nowWorld.getMinutes();
+                document.querySelector('.movingDivmax1000').style.display = "block";
+                document.querySelector('.spanLat1000').innerHTML = imageLat.toFixed(2);
+                document.querySelector('.spanLon1000').innerHTML = imageLon.toFixed(2);
+                document.querySelector('.cornerTemp1000').innerHTML = Math.round(tempC) + "C";
+                document.querySelector('.cornerTempF1000').innerHTML = Math.round(tempF) + "F";
+                fetch(` https://maps.googleapis.com/maps/api/geocode/json?latlng=${imageLat},${imageLon}&key=AIzaSyAhbhZNE6A-Zcg49SMCyO7r_lH4MCDylRc`)
+                    .then(response => response.json())
+                    .then(cityName => {
+                        let city = "MISSING NAME";
+                        let countryName = '';
+                        if (typeof cityName.results[0] !== 'undefined' && typeof cityName.results[0].address_components[3] !== 'undefined') {
+                            city = cityName.results[0].address_components[1].short_name;
+                            countryName = cityName.results[0].address_components[3].short_name;
+                        }
+                        document.querySelector(".cityCorner1000").innerHTML = `${city}`;
+                        const placeNameLi = {
+                            index: indexProp,
+                            worldPlace: city,
+                            countryShortName: countryName,
+                            tempC: tempC,
+                            tempF: tempF,
+                            day: this.props.state.day,
+                            curentHour: this.props.state.curentHour,
+                            minsWorld: curentMin,
+                            imageLatRoundLet: imageLatRound,
+                            imageLonRoundLet: imageLonRound,
+                            icon: icon
+                        }
+                        this.props.pushToList({li: placeNameLi});
+                        this.props.indexPlus();
+                    })
+            })
+        })
+    }
+
     render() {
       return (
         <div>
@@ -209,7 +263,7 @@ class Map extends React.Component {
                 displayLonLat={this.displayLonLat}
                 zoomout={this.zoomout}
             />
-            <List city={this.props.state.savedcities} />
+            <List city={this.props.state.savedcities} search={this.searchInput}/>
             <MovingDiv />
             <CornerInfo />
          </div>

@@ -64,14 +64,20 @@ input {
   text-transform: capitalize;
   color: rgba(255,255,255,0.85);
   text-shadow: 1px 1px rgba(255,255,255,0.1);
-  height: 25px;
+  height: 3.5rem;
   width: 150px;
-  font-size: 1em;
+  font-size: 1.5em;
   text-align: center;
   font-weight: 800;
   border-radius: 5px;
   font-family:'helvetica neue';
 }
+
+.listSearch {
+  position: relative;
+  top: 7px;
+}
+
 
 .temp-london {
   position: relative;

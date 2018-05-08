@@ -25,8 +25,8 @@ const List = (props) => {
             );
         return  (
                 <div className="wrapper">
-                  <Search />
-                    <h2>RECENT PLACES</h2>
+                  <Search onSearch={props.search}/>
+                    {/*<h2>RECENT PLACES</h2>*/}
                     <p></p>
                 <ul className="list">
                     {listItems}
