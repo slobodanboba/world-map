@@ -6,10 +6,7 @@ const defaultState = {
 export default (state = defaultState, action) => {
     switch (action.type) {
         case 'CITY_LIST':
-            return {
-                ...state,
-                cities: [...action.city]
-            };
+            return state;
         default:
             return state;
     }
