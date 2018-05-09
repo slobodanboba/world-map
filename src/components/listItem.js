@@ -19,7 +19,7 @@ class ListItem extends React.Component {
                 <label htmlFor="squaredThree"></label>
                 <span> {city.worldPlace} {city.countryShortName}</span>
                 <span>  {Math.round(city.tempC)}C| {Math.round(city.tempF)}F {city.day} {city.curentHour}:{city.minsWorld}h</span>
-                <img className="icon-AllWorld" style={{backgroundImage: 'url(` + /content/${city.icon}.png + `)'}} width="70px" height="70px"/>
+                <img className="icon-AllWorld" width="70px" height="70px"/>
                 <span className="textAlighnRight"> Lat:{city.imageLatRoundLet} Lon:{city.imageLonRoundLet} </span>
             </div>
         )
