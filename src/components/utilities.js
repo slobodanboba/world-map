@@ -38,4 +38,18 @@ export const innerHtmlCorner = (imageLat, imageLon, tempC, tempF ) => {
     document.querySelector('.cornerTempF1000').innerHTML = Math.round(tempF) + "F";
 }
 
+export const  instagramApi = (imageLat, imageLon) => {
+    async function fetchTempC() {
+       // https://api.instagram.com/oauth/authorize/?client_id=CLIENT-ID&redirect_uri=REDIRECT-URI&response_type=token
+        const response = await fetch(`https://api.instagram.com/v1/media/search?lat=20&lng=45&distance=5000?client_id=0967294b37ed492c8a3da834007a3b92&access_token=256864373.0967294.403d6bf2556f4cb9bc78cda8b4e3a958`);
+    // const response = await fetch(`https://api.instagram.com/oauth/authorize/?client_id=0967294b37ed492c8a3da834007a3b92&redirect_uri=http://lovemybicycle.com/&response_type=token`);
+        return response.json();
+    }
+    return fetchTempC()
+}
+
+
+// instagram API url:  "https://api.instagram.com/v1/media/search?lat=[LAT]&lng=[LNG]&distance=[DST]
+//     ?client_id=[ClientID]&access_token=[CODE]"
+
 

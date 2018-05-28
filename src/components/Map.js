@@ -8,13 +8,14 @@ import MovingDiv from "./MovingDiv";
 import CornerInfo from "./CornerInfo";
 import MapItems from "./MapItems";
 import '../stylesheets/style.css';
-import {getWidthHeight, fetchTempWorld, fetchOffset, innerHtmlCorner} from "./utilities";
+import {getWidthHeight, fetchTempWorld, fetchOffset, innerHtmlCorner, instagramApi } from "./utilities";
 
 class Map extends React.Component {
 
     componentDidMount() {
         document.querySelectorAll('.img').forEach(option => option.addEventListener('click', this.zoom));
         getWidthHeight();
+        console.log(instagramApi().then(data => console.log(data.data)));
     }
 
   getLatLon = (e) => {
