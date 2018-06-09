@@ -18,7 +18,8 @@ const List = (props) => {
     }
 
         let list = props.city;
-        let listItems = list.sort((a, b) => b.index - a.index).map((city,i) =>
+        //let sortedList = list.sort((a, b) => b.index - a.index);
+        let listItems = list.map((city,i) =>
                 (
                     <li key={i} className="listItem"><ListItem className="liItem" city={city} /></li>
                 )
@@ -26,7 +27,6 @@ const List = (props) => {
         return  (
                 <div className="wrapper">
                   <Search onSearch={props.search}/>
-                    {/*<h2>RECENT PLACES</h2>*/}
                     <p></p>
                 <ul className="list">
                     {listItems}

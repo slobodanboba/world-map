@@ -15,7 +15,7 @@ class Map extends React.Component {
     componentDidMount() {
         document.querySelectorAll('.img').forEach(option => option.addEventListener('click', this.zoom));
         getWidthHeight();
-        console.log(instagramApi().then(data => console.log(data.data)));
+        instagramApi(25, 40).then(data => console.log(data.data));
     }
 
   getLatLon = (e) => {
